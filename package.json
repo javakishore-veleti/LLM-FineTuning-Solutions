@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A comprehensive toolkit for fine-tuning Large Language Models (LLMs) using AWS Bedrock, OpenAI, and Anthropic Claude APIs",
   "scripts": {
+    "first-time": "node scripts/show-first-time-commands.js",
+    "daily": "node scripts/show-daily-commands.js",
+
     "setup": "npm run setup:venv && npm run setup:keys",
     "setup:venv": "node scripts/setup-python-env.js",
     "setup:keys": "npm run setup:openai",
@@ -14,7 +17,31 @@
     "verify:openai": "node scripts/setup-openai-key.js --verify",
     "activate:info": "node scripts/setup-python-env.js --activate-info",
     "prestart": "npm run check:openai",
-    "start": "echo 'Activate venv with: source ./scripts/activate-venv.sh'"
+    "start": "echo 'Activate venv with: source ./scripts/activate-venv.sh'",
+
+    "scrape": "npm run scrape:aws-reinvent",
+    "scrape:aws-reinvent": "node scripts/run-python.js modules/web_scraping/aws_reinvent_2025/scraper.py",
+    "scrape:refresh": "npm run scrape:aws-reinvent:refresh",
+    "scrape:aws-reinvent:refresh": "node scripts/run-python.js modules/web_scraping/aws_reinvent_2025/scraper.py --refresh",
+
+    "index": "npm run vectordb:create",
+    "index:update": "npm run vectordb:update",
+
+    "vectordb:create": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py create",
+    "vectordb:update": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py update",
+    "vectordb:delete": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py delete",
+    "vectordb:status": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py status",
+    "vectordb:exists": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py status",
+
+    "openai:summary": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py summary",
+    "openai:files:list": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py summary --json",
+    "openai:files:delete-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-files",
+    "openai:files:delete": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-file",
+    "openai:stores:delete-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-stores",
+    "openai:cleanup-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-all",
+
+    "cleanup:all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py cleanup-everything",
+    "cleanup:local": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-local-data"
   },
   "keywords": [
     "llm",
@@ -24,7 +51,9 @@
     "claude",
     "anthropic",
     "machine-learning",
-    "python"
+    "python",
+    "vector-database",
+    "web-scraping"
   ],
   "author": "javakishore-veleti",
   "license": "MIT",

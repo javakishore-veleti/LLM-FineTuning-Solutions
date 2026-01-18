@@ -254,6 +254,273 @@ response = client.chat.completions.create(
 
 For detailed instructions, see: `.github/instructions/02-openai-api-key-setup.instructions.md`
 
+---
+
+## 📋 Quick Reference - NPM Commands
+
+### 🚀 Quick Start
+
+```bash
+# First time? Run this to see all setup commands:
+npm run first-time
+
+# Already set up? Run this to see daily usage commands:
+npm run daily
+```
+
+---
+
+### 🔧 FIRST-TIME SETUP (Run Once)
+
+These commands are run **only once** when setting up the project for the first time.
+
+#### Environment Setup
+```bash
+# 1. Create Python virtual environment and install dependencies
+npm run setup
+
+# 2. Configure OpenAI API key (you'll be prompted to enter it)
+npm run setup:openai
+
+# 3. Verify OpenAI key is configured
+npm run check:openai
+```
+
+#### Initial Data Setup
+```bash
+# 4. Scrape AWS re:Invent 2025 content
+npm run scrape
+
+# 5. Create vector database from scraped content
+npm run index
+
+# 6. Verify vector DB was created
+npm run vectordb:status
+```
+
+#### First-Time Cleanup Options (if needed)
+```bash
+# Delete a specific file from OpenAI storage
+npm run openai:files:delete -- --filename=<filename.txt>
+
+# Delete all vector stores from OpenAI
+npm run openai:stores:delete-all
+
+# Delete only local scraped data
+npm run cleanup:local
+
+# Delete EVERYTHING and start fresh (OpenAI + local)
+npm run cleanup:all
+```
+
+---
+
+### 🔄 DAILY USAGE (Run Regularly)
+
+These commands are used during **daily development** workflow.
+
+#### Check Status
+```bash
+# View OpenAI storage summary (files, vector stores)
+npm run openai:summary
+
+# Check if vector DB exists and its status
+npm run vectordb:status
+
+# Verify OpenAI API key is still valid
+npm run check:openai
+```
+
+#### Refresh Content
+```bash
+# Re-scrape content (deletes old, fetches fresh)
+npm run scrape:refresh
+
+# Update vector DB with new scraped content
+npm run index:update
+```
+
+#### Delete Specific Data
+```bash
+# Delete a specific file from OpenAI storage
+npm run openai:files:delete -- --filename=<filename.txt>
+
+# Delete only local scraped files (keep OpenAI data)
+npm run cleanup:local
+
+# Delete vector DB from OpenAI (keeps local files)
+npm run vectordb:delete
+
+# Delete ALL files from OpenAI storage
+npm run openai:files:delete-all
+
+# Delete ALL vector stores from OpenAI
+npm run openai:stores:delete-all
+```
+
+#### Full Cleanup (when needed)
+```bash
+# Delete all OpenAI data (files + vector stores)
+npm run openai:cleanup-all
+
+# Delete EVERYTHING (OpenAI + local data) - requires confirmation
+npm run cleanup:all
+```
+
+---
+
+### 📊 Command Summary Table
+
+| Category | Command | Description |
+|----------|---------|-------------|
+| **Help** | `npm run first-time` | Show all first-time setup commands |
+| **Help** | `npm run daily` | Show all daily usage commands |
+| **Setup** | `npm run setup` | First-time: Create venv + install deps |
+| **Setup** | `npm run setup:openai` | First-time: Configure OpenAI API key |
+| **Setup** | `npm run check:openai` | Check if OpenAI key is configured |
+| **Scrape** | `npm run scrape` | Scrape AWS re:Invent content |
+| **Scrape** | `npm run scrape:refresh` | Delete old + re-scrape fresh |
+| **Index** | `npm run index` | Create vector DB from scraped content |
+| **Index** | `npm run index:update` | Add new files to vector DB |
+| **Status** | `npm run vectordb:status` | Check if vector DB exists |
+| **Status** | `npm run openai:summary` | Show OpenAI storage summary |
+| **Delete** | `npm run openai:files:delete -- --filename=X` | Delete specific file |
+| **Delete** | `npm run openai:files:delete-all` | Delete ALL OpenAI files |
+| **Delete** | `npm run openai:stores:delete-all` | Delete ALL vector stores |
+| **Delete** | `npm run vectordb:delete` | Delete vector DB + its files |
+| **Delete** | `npm run cleanup:local` | Delete local scraped data only |
+| **Delete** | `npm run cleanup:all` | Delete EVERYTHING |
+
+---
+
+## 🌐 Web Scraping - AWS re:Invent 2025
+
+Scrape AWS re:Invent 2025 announcements and related blog posts.
+
+### NPM Commands for Web Scraping
+
+| Command | Description |
+|---------|-------------|
+| `npm run scrape` | Scrape AWS re:Invent 2025 content (alias) |
+| `npm run scrape:aws-reinvent` | Scrape AWS re:Invent 2025 content (first run) |
+| `npm run scrape:refresh` | Delete existing content and re-scrape (alias) |
+| `npm run scrape:aws-reinvent:refresh` | Delete existing content and re-scrape fresh data |
+
+### Data Storage Location
+
+| OS | Path |
+|----|------|
+| **macOS/Linux** | `~/runtime_data/datasets/aws_reinvent_2025/latest-content/` |
+| **Windows** | `%USERPROFILE%\runtime_data\datasets\aws_reinvent_2025\latest-content\` |
+
+## 🗄️ OpenAI Vector Database
+
+Create and manage OpenAI vector stores for semantic search over scraped content.
+
+### NPM Commands for Vector Database
+
+| Command | Description |
+|---------|-------------|
+| `npm run index` | Create vector store (alias for vectordb:create) |
+| `npm run index:update` | Update vector store (alias for vectordb:update) |
+| `npm run vectordb:create` | Create a new vector store from scraped content |
+| `npm run vectordb:update` | Add new files to existing vector store |
+| `npm run vectordb:delete` | Delete the vector store and all files |
+| `npm run vectordb:status` | Check if vector DB exists and show status |
+| `npm run vectordb:exists` | Check if vector DB exists (alias for status) |
+
+### NPM Commands for OpenAI Storage Management
+
+| Command | Description |
+|---------|-------------|
+| `npm run openai:summary` | Show summary of all files and vector stores |
+| `npm run openai:files:list` | List all files in OpenAI storage (JSON) |
+| `npm run openai:files:delete-all` | Delete ALL files from OpenAI storage |
+| `npm run openai:files:delete -- --filename=<name>` | Delete a specific file by name |
+| `npm run openai:stores:delete-all` | Delete ALL vector stores |
+| `npm run openai:cleanup-all` | Delete all OpenAI files and vector stores |
+
+### NPM Commands for Full Cleanup
+
+| Command | Description |
+|---------|-------------|
+| `npm run cleanup:all` | Delete EVERYTHING (OpenAI + local data) |
+| `npm run cleanup:local` | Delete only local scraped data and config |
+
+### Complete Workflow
+
+```bash
+# 1. Scrape content
+npm run scrape
+
+# 2. Create vector store (indexes scraped content)
+npm run index
+
+# 3. Check if vector DB exists
+npm run vectordb:status
+
+# 4. View OpenAI storage summary
+npm run openai:summary
+
+# 5. Delete a specific file from OpenAI
+npm run openai:files:delete -- --filename=myfile.txt
+
+# 6. Delete everything and start fresh
+npm run cleanup:all
+```
+
+### Vector Store Configuration
+
+| Item | Value |
+|------|-------|
+| **Store Name** | `LLM-FineTuning-Solutions` |
+| **Config File** | `~/runtime_data/keys/openai/vector-dbs/LLM-FineTuning-Solutions.json` |
+
+### Usage Workflow
+
+```bash
+# 1. First, scrape the content
+npm run scrape:aws-reinvent
+
+# 2. Create the vector store (uploads files to OpenAI)
+npm run vectordb:create
+
+# 3. Check status
+npm run vectordb:status
+
+# 4. To refresh content and update vector store:
+npm run scrape:aws-reinvent:refresh
+npm run vectordb:update
+
+# 5. To delete and start over:
+npm run vectordb:delete
+```
+
+### Using the Vector Store in Python
+
+```python
+from openai import OpenAI
+import json
+from pathlib import Path
+
+# Load vector store ID from config
+config_path = Path.home() / "runtime_data/keys/openai/vector-dbs/LLM-FineTuning-Solutions.json"
+with open(config_path) as f:
+    config = json.load(f)
+
+client = OpenAI()
+vector_store_id = config['vector_store_id']
+
+# Use with an Assistant for RAG
+assistant = client.beta.assistants.create(
+    name="AWS re:Invent Expert",
+    instructions="You are an expert on AWS re:Invent 2025 announcements.",
+    model="gpt-4-turbo",
+    tools=[{"type": "file_search"}],
+    tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}
+)
+```
+
 ## 📁 Project Structure
 
 ```
@@ -262,16 +529,21 @@ LLM-FineTuning-Solutions/
 │   └── instructions/
 │       ├── 01-aws-iam-user-setup.instructions.md  # AWS setup guide
 │       └── 02-openai-api-key-setup.instructions.md # OpenAI key setup guide
+├── modules/
+│   ├── vector_dbs/
+│   │   └── openai/
+│   │       └── vector_store_manager.py            # OpenAI vector store CRUD
+│   └── web_scraping/
+│       └── aws_reinvent_2025/
+│           └── scraper.py                         # AWS re:Invent 2025 scraper
 ├── scripts/
+│   ├── run-python.js                              # Python script runner
 │   ├── setup_aws_user.sh                          # AWS IAM setup script
 │   ├── setup-python-env.js                        # Python venv setup (cross-platform)
 │   ├── setup-openai-key.js                        # OpenAI key setup (cross-platform)
 │   ├── activate-venv.sh                           # macOS/Linux venv activation (generated)
-│   ├── activate-venv.bat                          # Windows CMD venv activation (generated)
-│   ├── activate-venv.ps1                          # Windows PowerShell venv activation (generated)
 │   ├── load-openai-key.sh                         # macOS/Linux OpenAI key loader (generated)
-│   ├── load-openai-key.bat                        # Windows CMD OpenAI key loader (generated)
-│   └── load-openai-key.ps1                        # Windows PowerShell OpenAI key loader (generated)
+│   └── ...                                        # Windows .bat/.ps1 versions
 ├── .env                                           # Environment variables (gitignored)
 ├── .gitignore
 ├── LICENSE
@@ -279,16 +551,21 @@ LLM-FineTuning-Solutions/
 ├── README.md
 └── requirements.txt
 
-# External Directories (not in project):
+# External Directories (in user home, not in project):
 ~/runtime_data/
-├── python_venvs/
-│   └── LLM-FineTuning-Solutions/                  # Python virtual environment
-└── keys/
-    └── openai/
-        ├── openai_api_key.txt                     # Your API key
-        ├── openai_env.sh                          # Bash export script
-        ├── openai_env.bat                         # Windows CMD script
-        └── openai_env.ps1                         # PowerShell script
+├── datasets/
+│   └── aws_reinvent_2025/
+│       └── latest-content/                        # Scraped AWS content
+│           ├── *.txt                              # Individual page content
+│           └── scrape_metadata.json               # Scraping metadata
+├── keys/
+│   └── openai/
+│       ├── openai_api_key.txt                     # Your API key
+│       ├── openai_env.sh                          # Bash export script
+│       └── vector-dbs/
+│           └── LLM-FineTuning-Solutions.json      # Vector store config & IDs
+└── python_venvs/
+    └── LLM-FineTuning-Solutions/                  # Python virtual environment
 ```
 
 ## 🔒 Security Notes
