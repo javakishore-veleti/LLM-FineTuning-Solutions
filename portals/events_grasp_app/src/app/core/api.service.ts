@@ -1,15 +1,30 @@
 import { Injectable } from '@angular/core';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   // Base URL for backend API; empty = same origin
   private baseUrl = '';
 
-  constructor() {}
+  constructor(private auth: AuthService) {}
 
   private async request(path: string, options: RequestInit = {}) {
     const url = `${this.baseUrl}${path}`;
-    const res = await fetch(url, { ...options, credentials: 'same-origin' });
+
+    const headers: Record<string, string> = {};
+    // copy existing headers passed in
+    if (options.headers) {
+      const h = options.headers as Record<string, string>;
+      Object.assign(headers, h);
+    }
+
+    // Attach Authorization header from AuthService if token exists
+    const token = this.auth?.getToken?.();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, { ...options, headers, credentials: 'same-origin' });
     const text = await res.text();
     let json: any = null;
     try {

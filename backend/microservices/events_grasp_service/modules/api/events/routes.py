@@ -1,64 +1,51 @@
-from flask import Blueprint, request, jsonify, current_app
-from modules.core.dao.event_dao import create_event, get_event, list_events, update_event, delete_event
+from fastapi import APIRouter, HTTPException
+from typing import List
+from events_grasp_service.modules.core.services.dtos.event_crud import EventCrudReq, EventCrudResp, EventCrudApiModel, EventCrudCtx
+from events_grasp_service.modules.core.services.impl.event_service_impl import EventServiceSingleton
+from events_grasp_service.modules.core.integrations.db import DBManager
+from events_grasp_service.modules.core.models.event import create_event_model
 
-bp = Blueprint('events', __name__, url_prefix='/api/events')
+router = APIRouter(prefix='/api/events')
 
+# instantiate service singleton using local DBManager and model
+DB = DBManager()
+Base = DB.Base
+EventModel = create_event_model(Base)
+service = EventServiceSingleton(DB, EventModel)
 
-@bp.route('/', methods=['GET'])
-def events_list():
-    events = list_events()
-    data = [
-        {
-            'event_id': e.event_id,
-            'event_name': e.event_name,
-            'event_description': e.event_description,
-            'source_url': e.source_url,
-            'source_location_type': e.source_location_type,
-            'is_active': e.is_active,
-            'created_at': e.created_at.isoformat() if e.created_at else None
-        }
-        for e in events
-    ]
-    return jsonify(data), 200
+@router.get('/', response_model=List[EventCrudApiModel])
+def list_events():
+    ctx = EventCrudCtx(req=EventCrudReq())
+    ctx = service.list(ctx)
+    return ctx.resp.events or []
 
+@router.get('/{event_id}', response_model=EventCrudApiModel)
+def get_event(event_id: int):
+    ctx = EventCrudCtx(req=EventCrudReq(event_id=event_id))
+    ctx = service.get(ctx)
+    if not ctx.resp.success:
+        raise HTTPException(status_code=404, detail=ctx.resp.message)
+    return ctx.resp.event
 
-@bp.route('/<int:event_id>', methods=['GET'])
-def events_get(event_id):
-    e = get_event(event_id)
-    if not e:
-        return jsonify({'error': 'not found'}), 404
-    return jsonify({
-        'event_id': e.event_id,
-        'event_name': e.event_name,
-        'event_description': e.event_description,
-        'source_url': e.source_url,
-        'source_location_type': e.source_location_type,
-        'is_active': e.is_active,
-        'created_at': e.created_at.isoformat() if e.created_at else None
-    }), 200
+@router.post('/', response_model=EventCrudResp, status_code=201)
+def create_event(payload: EventCrudReq):
+    ctx = EventCrudCtx(req=payload)
+    ctx = service.create(ctx)
+    return ctx.resp
 
+@router.put('/{event_id}', response_model=EventCrudResp)
+def update_event(event_id: int, payload: EventCrudReq):
+    payload.event_id = event_id
+    ctx = EventCrudCtx(req=payload)
+    ctx = service.update(ctx)
+    if not ctx.resp.success:
+        raise HTTPException(status_code=404, detail=ctx.resp.message)
+    return ctx.resp
 
-@bp.route('/', methods=['POST'])
-def events_create():
-    payload = request.get_json() or {}
-    if not payload.get('event_name') or not payload.get('source_url'):
-        return jsonify({'error': 'event_name and source_url required'}), 400
-    ev = create_event(payload)
-    return jsonify({'event_id': ev.event_id}), 201
-
-
-@bp.route('/<int:event_id>', methods=['PUT'])
-def events_update(event_id):
-    payload = request.get_json() or {}
-    ev = update_event(event_id, payload)
-    if not ev:
-        return jsonify({'error': 'not found'}), 404
-    return jsonify({'event_id': ev.event_id}), 200
-
-
-@bp.route('/<int:event_id>', methods=['DELETE'])
-def events_delete(event_id):
-    ok = delete_event(event_id)
-    if not ok:
-        return jsonify({'error': 'not found'}), 404
-    return jsonify({'deleted': True}), 200
+@router.delete('/{event_id}', response_model=EventCrudResp)
+def delete_event(event_id: int):
+    ctx = EventCrudCtx(req=EventCrudReq(event_id=event_id))
+    ctx = service.delete(ctx)
+    if not ctx.resp.success:
+        raise HTTPException(status_code=404, detail=ctx.resp.message)
+    return ctx.resp

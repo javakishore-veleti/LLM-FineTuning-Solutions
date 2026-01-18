@@ -22,6 +22,9 @@
     "backend:start": "node scripts/run-python.js backend/microservices/events_grasp_service/run.py",
     "backend:uvicorn": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/run_uvicorn.py",
 
+    "backend:tests:events": "bash scripts/backend/microservices/events_grasp_service/master-run-tests.sh events",
+    "backend:tests:all": "bash scripts/backend/microservices/events_grasp_service/master-run-tests.sh all",
+
     "scrape": "npm run scrape:aws-reinvent",
     "scrape:aws-reinvent": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/web_scraping/aws_reinvent_2025/scraper.py",
     "scrape:refresh": "npm run scrape:aws-reinvent:refresh",

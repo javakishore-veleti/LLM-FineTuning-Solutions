@@ -9,12 +9,13 @@ import json
 import logging
 
 # New class-based DB manager and DAOs (package-local imports)
-from .modules.core.dao.impl.db import DBManager
+from .modules.core.integrations.db import DBManager
 from .modules.core.models.event import create_event_model
 from .modules.core.models.provider import create_provider_model
 from .modules.core.models.event_provider import create_event_provider_model
 from .modules.core.dao.impl.event_dao import EventDAO
 from .modules.core.dao.impl.provider_dao import ProviderDAO
+from .modules.api.events.routes import router as events_router
 
 app = FastAPI(title="Events Grasp Service")
 logger = logging.getLogger('events_grasp_service')
@@ -48,21 +49,17 @@ EventProvider = create_event_provider_model(Base)
 # init tables
 DB.init_db()
 
-# instantiate DAOs
-event_dao = EventDAO(DB, Event)
+# register routers
+app.include_router(events_router)
+
+# --- Events endpoints moved to modules/api/events/routes.py ---
+# The router above now provides all /api/events/* endpoints (CRUD via EventServiceSingleton).
+
+# PROVIDERS
+# instantiate DAOs for providers
 provider_dao = ProviderDAO(DB, Provider, EventProvider)
-
-# Pydantic schemas
-class EventIn(BaseModel):
-    event_name: str
-    event_description: Optional[str] = None
-    source_url: str
-    source_location_type: Optional[str] = 'http_url'
-    is_active: Optional[bool] = True
-
-class EventOut(EventIn):
-    event_id: int
-    created_at: Optional[str]
+# instantiate event DAO (used by publish endpoint)
+event_dao = EventDAO(DB, Event)
 
 class ProviderIn(BaseModel):
     provider_type: str
@@ -84,61 +81,6 @@ class PublishResult(BaseModel):
     status: str
     message: Optional[str] = None
 
-# EVENTS
-@app.get('/api/events/', response_model=List[EventOut])
-def api_list_events():
-    events = event_dao.list_events()
-    out = []
-    for e in events:
-        out.append({
-            'event_id': e.event_id,
-            'event_name': e.event_name,
-            'event_description': e.event_description,
-            'source_url': e.source_url,
-            'source_location_type': e.source_location_type,
-            'is_active': e.is_active,
-            'created_at': e.created_at.isoformat() if e.created_at else None
-        })
-    return out
-
-@app.get('/api/events/{event_id}', response_model=EventOut)
-def api_get_event(event_id: int):
-    e = event_dao.get_event(event_id)
-    if not e:
-        raise HTTPException(status_code=404, detail='not found')
-    return {
-        'event_id': e.event_id,
-        'event_name': e.event_name,
-        'event_description': e.event_description,
-        'source_url': e.source_url,
-        'source_location_type': e.source_location_type,
-        'is_active': e.is_active,
-        'created_at': e.created_at.isoformat() if e.created_at else None
-    }
-
-@app.post('/api/events/', status_code=201)
-def api_create_event(payload: EventIn):
-    data = payload.dict()
-    if not data.get('event_name') or not data.get('source_url'):
-        raise HTTPException(status_code=400, detail='event_name and source_url required')
-    ev = event_dao.create_event(data)
-    return {'event_id': ev.event_id}
-
-@app.put('/api/events/{event_id}')
-def api_update_event(event_id: int, payload: EventIn):
-    ev = event_dao.update_event(event_id, payload.dict())
-    if not ev:
-        raise HTTPException(status_code=404, detail='not found')
-    return {'event_id': ev.event_id}
-
-@app.delete('/api/events/{event_id}')
-def api_delete_event(event_id: int):
-    ok = event_dao.delete_event(event_id)
-    if not ok:
-        raise HTTPException(status_code=404, detail='not found')
-    return {'deleted': True}
-
-# PROVIDERS
 @app.post('/api/providers/', status_code=201, response_model=ProviderOut)
 def api_create_provider(payload: ProviderIn):
     data = payload.dict()
