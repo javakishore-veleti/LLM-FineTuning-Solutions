@@ -4,10 +4,10 @@
 # Usage:
 #   master-run-tests.sh [events|all|<script-number>|<script-filename>]
 # Examples:
-#   master-run-tests.sh events      -> runs 01-test-events-crud.sh
-#   master-run-tests.sh all         -> runs all numbered tests (01,02,...)
-#   master-run-tests.sh 01          -> runs 01-test-events-crud.sh
-#   master-run-tests.sh 01-test-events-crud.sh -> runs that file
+#   master-run-tests.sh events      -> runs signup (01), customers (02), then events (03)
+#   master-run-tests.sh all         -> runs preferred sequence then any other numbered scripts
+#   master-run-tests.sh 01          -> runs 01-signup-auth.sh
+#   master-run-tests.sh 01-signup-auth.sh -> runs that file
 
 set -euo pipefail
 
@@ -36,28 +36,46 @@ failures=0
 
 case "${1:-events}" in
   events)
-    run_script "$SCRIPTS_DIR/01-test-events-crud.sh" || failures=$((failures+1))
+    # Preferred execution order for an events-focused integration run:
+    # 1) signup/auth tests (01)
+    # 2) customers CRUD (02)
+    # 3) events CRUD (03)
+    run_script "$SCRIPTS_DIR/01-signup-auth.sh" || failures=$((failures+1))
+    run_script "$SCRIPTS_DIR/02-customers-crud.sh" || failures=$((failures+1))
+    run_script "$SCRIPTS_DIR/03-events-crud.sh" || failures=$((failures+1))
     ;;
   all)
-    # run all numbered scripts except the stop script (99) which is for manual stop
+    # Run preferred sequence first (so dependencies are prepared)
+    preferred=("01-signup-auth.sh" "02-customers-crud.sh" "03-events-crud.sh")
+    for p in "${preferred[@]}"; do
+      f="$SCRIPTS_DIR/$p"
+      if [[ -f "$f" ]]; then
+        run_script "$f" || failures=$((failures+1))
+      fi
+    done
+
+    # Then run any other numbered scripts in numeric order, skipping the stop script (99)
     for f in "$SCRIPTS_DIR"/[0-9][0-9]-*.sh; do
-      # skip if none
       [[ -e "$f" ]] || continue
-      # skip stop script
-      if [[ "$(basename "$f")" == "99-stop-events-service.sh" ]]; then
+      base="$(basename "$f")"
+      # skip preferred ones and the stop script
+      if [[ " ${preferred[*]} " == *" $base "* ]] || [[ "$base" == "99-stop-events-service.sh" ]]; then
         continue
       fi
       run_script "$f" || failures=$((failures+1))
     done
     ;;
   [0-9][0-9])
-    file="$SCRIPTS_DIR/$(printf "%02d" "$1")-*.sh"
-    # find matching
-    matches=( $SCRIPTS_DIR/${1}-*.sh $SCRIPTS_DIR/$(printf "%02d" "$1")-*.sh )
-    for m in "${matches[@]}"; do
-      if [[ -f "$m" ]]; then
-        run_script "$m" || failures=$((failures+1))
-      fi
+    # Map explicit two-digit to either new names or legacy names
+    nn=$(printf "%02d" "$1")
+    # prefer new naming pattern
+    candidates=("$SCRIPTS_DIR/${nn}-*.sh" "$SCRIPTS_DIR/${nn}-*.sh" "$SCRIPTS_DIR/*${nn}*.sh")
+    for m in "${candidates[@]}"; do
+      for file in $m; do
+        if [[ -f "$file" ]]; then
+          run_script "$file" || failures=$((failures+1))
+        fi
+      done
     done
     ;;
   *.sh)

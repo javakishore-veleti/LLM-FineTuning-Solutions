@@ -1,116 +1,83 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   // Base URL for backend API; empty = same origin
   private baseUrl = '';
 
-  constructor(private auth: AuthService) {}
+  constructor(private http: HttpClient) {}
 
-  private async request(path: string, options: RequestInit = {}) {
+  private async request<T>(path: string, options: { method?: string; body?: any; headers?: HttpHeaders } = {}): Promise<T> {
     const url = `${this.baseUrl}${path}`;
+    const method = (options.method || 'GET').toUpperCase();
+    const headers = options.headers || undefined;
 
-    const headers: Record<string, string> = {};
-    // copy existing headers passed in
-    if (options.headers) {
-      const h = options.headers as Record<string, string>;
-      Object.assign(headers, h);
+    if (method === 'GET') {
+      return await firstValueFrom(this.http.get<T>(url, { headers }));
+    }
+    if (method === 'POST') {
+      return await firstValueFrom(this.http.post<T>(url, options.body, { headers }));
+    }
+    if (method === 'PUT') {
+      return await firstValueFrom(this.http.put<T>(url, options.body, { headers }));
+    }
+    if (method === 'DELETE') {
+      return await firstValueFrom(this.http.delete<T>(url, { headers }));
     }
 
-    // Attach Authorization header from AuthService if token exists
-    const token = this.auth?.getToken?.();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const res = await fetch(url, { ...options, headers, credentials: 'same-origin' });
-    const text = await res.text();
-    let json: any = null;
-    try {
-      json = text ? JSON.parse(text) : null;
-    } catch (e) {
-      // not JSON
-    }
-    if (!res.ok) {
-      const err = new Error(json?.error || res.statusText || 'Request failed');
-      (err as any).status = res.status;
-      (err as any).body = json || text;
-      throw err;
-    }
-    return json || text;
+    // fallback
+    return await firstValueFrom(this.http.request<T>(method, url, { body: options.body, headers }));
   }
 
   async getEvents() {
-    return await this.request('/api/events/');
+    return await this.request<any>('/api/events/');
   }
 
   async getEvent(id: number) {
-    return await this.request(`/api/events/${id}`);
+    return await this.request<any>(`/api/events/${id}`);
   }
 
   async postScrape(opts: { refresh?: boolean; maxDepth?: number } = {}) {
-    const body = JSON.stringify(opts);
-    return await this.request('/api/scrape', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    });
+    return await this.request<any>('/api/scrape', { method: 'POST', body: opts });
   }
 
   async postVectorCreate(opts: { storeName?: string } = {}) {
-    const body = JSON.stringify(opts);
-    return await this.request('/api/vectordb/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    });
+    return await this.request<any>('/api/vectordb/create', { method: 'POST', body: opts });
   }
 
   async postEvent(payload: any) {
-    const body = JSON.stringify(payload);
-    return await this.request('/api/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    });
+    return await this.request<any>('/api/events', { method: 'POST', body: payload });
   }
 
   // Providers
   async getProviders() {
-    return await this.request('/api/providers/');
+    return await this.request<any>('/api/providers/');
   }
 
   async createProvider(payload: any) {
-    return await this.request('/api/providers/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    return await this.request<any>('/api/providers/', { method: 'POST', body: payload });
   }
 
   async deleteProvider(id: number) {
-    return await this.request(`/api/providers/${id}`, { method: 'DELETE' });
+    return await this.request<any>(`/api/providers/${id}`, { method: 'DELETE' });
   }
 
   // Event providers
   async listEventProviders(eventId: number) {
-    return await this.request(`/api/events/${eventId}/providers`);
+    return await this.request<any>(`/api/events/${eventId}/providers`);
   }
 
   async addProviderToEvent(eventId: number, payload: any) {
-    return await this.request(`/api/events/${eventId}/providers`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    return await this.request<any>(`/api/events/${eventId}/providers`, { method: 'POST', body: payload });
   }
 
   async removeEventProvider(eventId: number, epId: number) {
-    return await this.request(`/api/events/${eventId}/providers/${epId}`, { method: 'DELETE' });
+    return await this.request<any>(`/api/events/${eventId}/providers/${epId}`, { method: 'DELETE' });
   }
 
   async publishEvent(eventId: number) {
-    return await this.request(`/api/events/${eventId}/publish`, { method: 'POST' });
+    return await this.request<any>(`/api/events/${eventId}/publish`, { method: 'POST' });
   }
 }

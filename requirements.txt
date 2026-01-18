@@ -29,3 +29,6 @@ lxml>=5.0.0,<6.0.0
 # FastAPI backend for microservices
 fastapi>=0.95.0,<1.0.0
 uvicorn[standard]>=0.22.0,<1.0.0
+
+# Passlib for password hashing (optional but recommended)
+passlib[bcrypt]>=1.7.4

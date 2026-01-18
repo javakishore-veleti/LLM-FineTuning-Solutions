@@ -2,13 +2,13 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 from events_grasp_service.modules.core.services.dtos.event_crud import EventCrudReq, EventCrudResp, EventCrudApiModel, EventCrudCtx
 from events_grasp_service.modules.core.services.impl.event_service_impl import EventServiceSingleton
-from events_grasp_service.modules.core.integrations.db import DBManager
+from events_grasp_service.modules.core.integrations.db import get_db_manager
 from events_grasp_service.modules.core.models.event import create_event_model
 
 router = APIRouter(prefix='/api/events')
 
-# instantiate service singleton using local DBManager and model
-DB = DBManager()
+# instantiate service singleton using shared DBManager and model
+DB = get_db_manager()
 Base = DB.Base
 EventModel = create_event_model(Base)
 service = EventServiceSingleton(DB, EventModel)

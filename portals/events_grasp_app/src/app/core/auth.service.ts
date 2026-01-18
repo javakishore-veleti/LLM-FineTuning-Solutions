@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'eg_auth_token';
 
-  constructor() {}
+  constructor(private api: ApiService) {}
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
@@ -22,16 +23,34 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  // placeholder login - in future call backend auth endpoint
-  async login(username: string, password: string): Promise<boolean> {
-    // Example: call backend for real auth; for now accept any non-empty
-    if (!username || !password) return false;
-    const fakeToken = 'local-dev-token';
-    this.setToken(fakeToken);
-    return true;
+  async signup(payload: { first_name: string; last_name: string; email: string; password: string }) {
+    return await this.api.request('/api/auth/signup', { method: 'POST', body: payload });
   }
 
-  logout() {
+  async login(email: string, password: string): Promise<boolean> {
+    const resp = await this.api.request('/api/auth/login', { method: 'POST', body: { email, password } });
+    if (resp && resp.token) {
+      this.setToken(resp.token);
+      return true;
+    }
+    return false;
+  }
+
+  async logout() {
+    const token = this.getToken();
+    if (token) {
+      try {
+        await this.api.request('/api/auth/logout', { method: 'POST', body: { token } });
+      } catch (e) {
+        // ignore
+      }
+    }
     this.clearToken();
+  }
+
+  async me() {
+    const token = this.getToken();
+    if (!token) return null;
+    return await this.api.request('/api/auth/me?token=' + encodeURIComponent(token));
   }
 }

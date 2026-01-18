@@ -24,6 +24,8 @@
 
     "backend:tests:events": "bash scripts/backend/microservices/events_grasp_service/master-run-tests.sh events",
     "backend:tests:all": "bash scripts/backend/microservices/events_grasp_service/master-run-tests.sh all",
+    "backend:tests:auth": "bash scripts/backend/microservices/events_grasp_service/03-test-auth-signup-login.sh",
+    "backend:tests:customers": "bash scripts/backend/microservices/events_grasp_service/04-test-customers-crud.sh",
 
     "scrape": "npm run scrape:aws-reinvent",
     "scrape:aws-reinvent": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/web_scraping/aws_reinvent_2025/scraper.py",

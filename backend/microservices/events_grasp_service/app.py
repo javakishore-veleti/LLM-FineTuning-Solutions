@@ -7,15 +7,22 @@ import uvicorn
 import os
 import json
 import logging
+import warnings
+from sqlalchemy.exc import SAWarning
 
-# New class-based DB manager and DAOs (package-local imports)
-from .modules.core.integrations.db import DBManager
+# Suppress SQLAlchemy SAWarning messages that appear when models are rebound to existing metadata
+warnings.filterwarnings('ignore', category=SAWarning)
+# Lower SQLAlchemy logging to ERROR to avoid noisy INFO/WARNING logs
+logging.getLogger('sqlalchemy').setLevel(logging.ERROR)
+
+# --- Core integrations and model factories (imported after logging configured) ---
+from .modules.core.integrations.migrator import apply_migrations
+from .modules.core.integrations.db import get_db_manager
 from .modules.core.models.event import create_event_model
 from .modules.core.models.provider import create_provider_model
 from .modules.core.models.event_provider import create_event_provider_model
-from .modules.core.dao.impl.event_dao import EventDAO
-from .modules.core.dao.impl.provider_dao import ProviderDAO
-from .modules.api.events.routes import router as events_router
+from .modules.core.models.customer import create_customer_model
+from .modules.core.models.customer_session import create_customer_session_model
 
 app = FastAPI(title="Events Grasp Service")
 logger = logging.getLogger('events_grasp_service')
@@ -39,18 +46,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize DB manager and models
-DB = DBManager()
+# Ensure migrations applied for sqlite
+try:
+    apply_migrations()
+except Exception as e:
+    logger.exception('Failed to apply migrations')
+
+# Initialize DB manager and models (use singleton to keep one Base/metadata)
+DB = get_db_manager()
 Base = DB.Base
 # create ORM models bound to the declarative Base
+Customer = create_customer_model(Base)
+CustomerSession = create_customer_session_model(Base)
 Event = create_event_model(Base)
 Provider = create_provider_model(Base)
 EventProvider = create_event_provider_model(Base)
 # init tables
 DB.init_db()
 
+# Now import DAOs and routers (after models are bound to the shared Base)
+from .modules.core.dao.impl.event_dao import EventDAO
+from .modules.core.dao.impl.provider_dao import ProviderDAO
+from .modules.api.events.routes import router as events_router
+from .modules.api.auth import routes as auth_routes
+from .modules.api.customer import routes as customer_routes
+
 # register routers
 app.include_router(events_router)
+app.include_router(auth_routes.router)
+app.include_router(customer_routes.router)
 
 # --- Events endpoints moved to modules/api/events/routes.py ---
 # The router above now provides all /api/events/* endpoints (CRUD via EventServiceSingleton).
