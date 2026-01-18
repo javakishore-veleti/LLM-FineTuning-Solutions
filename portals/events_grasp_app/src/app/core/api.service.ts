@@ -9,7 +9,8 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  private async request<T>(path: string, options: { method?: string; body?: any; headers?: HttpHeaders } = {}): Promise<T> {
+  // make request public and default generic to any
+  public async request<T = any>(path: string, options: { method?: string; body?: any; headers?: HttpHeaders } = {}): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const method = (options.method || 'GET').toUpperCase();
     const headers = options.headers || undefined;
