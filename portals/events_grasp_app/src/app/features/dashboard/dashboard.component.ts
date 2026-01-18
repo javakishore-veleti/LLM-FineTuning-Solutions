@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { ApiService, DashboardDataResponse, RecentEvent, RecentConversation } from '../../core/api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -423,6 +424,7 @@ import { AuthService } from '../../core/auth.service';
 })
 export class DashboardComponent implements OnInit {
   userName = 'User';
+  isLoading = true;
 
   stats = {
     events: 0,
@@ -434,7 +436,7 @@ export class DashboardComponent implements OnInit {
   recentEvents: Array<{ name: string; source: string; indexed: boolean }> = [];
   recentConversations: Array<{ title: string; messages: number; timeAgo: string }> = [];
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private api: ApiService) {}
 
   async ngOnInit() {
     // Load user info
@@ -447,20 +449,51 @@ export class DashboardComponent implements OnInit {
       console.error('Failed to load user info', e);
     }
 
-    // TODO: Load actual stats from API
-    // For now, starting with 0 - new users will see the "Start Here" view
-    // Once they have events, the stats will show
-    this.stats = {
-      events: 0,
-      conversations: 0,
-      vectorStores: 0,
-      providers: 0
-    };
+    // Load dashboard data from API
+    await this.loadDashboardData();
+  }
 
-    // TODO: Load actual events from API
-    this.recentEvents = [];
+  private async loadDashboardData(): Promise<void> {
+    try {
+      this.isLoading = true;
+      const response: DashboardDataResponse = await this.api.getDashboardData(1, 5);
 
-    // TODO: Load actual conversations from API
-    this.recentConversations = [];
+      if (response.success) {
+        // Map stats
+        if (response.stats) {
+          this.stats = {
+            events: response.stats.events || 0,
+            conversations: response.stats.conversations || 0,
+            vectorStores: response.stats.vector_stores || 0,
+            providers: response.stats.providers || 0
+          };
+        }
+
+        // Map recent events
+        if (response.recent_events) {
+          this.recentEvents = response.recent_events.map((event: RecentEvent) => ({
+            name: event.name,
+            source: event.source,
+            indexed: event.indexed
+          }));
+        }
+
+        // Map recent conversations
+        if (response.recent_conversations) {
+          this.recentConversations = response.recent_conversations.map((conv: RecentConversation) => ({
+            title: conv.title,
+            messages: conv.messages,
+            timeAgo: conv.time_ago
+          }));
+        }
+      } else {
+        console.error('Failed to load dashboard data:', response.message);
+      }
+    } catch (e) {
+      console.error('Error loading dashboard data', e);
+      // Keep defaults on error
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

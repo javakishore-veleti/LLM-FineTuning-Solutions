@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from typing import Optional
+from contextlib import contextmanager
 import os
 from pathlib import Path
 
@@ -36,7 +37,21 @@ class DBManager:
         self.Base.metadata.create_all(bind=self.engine)
 
     def get_session(self) -> Session:
+        """Get a database session. Caller is responsible for closing."""
         return self.SessionLocal()
+
+    @contextmanager
+    def session_scope(self):
+        """Provide a transactional scope around a series of operations."""
+        session = self.SessionLocal()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
 
 
 # Module-level singleton for the default DBManager

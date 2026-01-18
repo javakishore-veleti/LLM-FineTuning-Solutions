@@ -412,7 +412,19 @@ export class SignupComponent {
       this.toast.success('🎉 Welcome! Please sign in to start scraping');
       await this.router.navigateByUrl('/login');
     } catch (e: any) {
-      this.toast.error('Signup failed: ' + (e?.message || 'Please try again'));
+      // Show user-friendly error messages based on error type
+      const status = e?.status;
+      const detail = e?.error?.detail || '';
+
+      if (status === 400 && detail.toLowerCase().includes('email already')) {
+        this.toast.error('This email is already registered. Please sign in or use a different email.');
+      } else if (status === 400) {
+        this.toast.error('Invalid information provided. Please check your details and try again.');
+      } else if (status === 0 || status === 503 || status === 504) {
+        this.toast.error('Unable to connect to server. Please check your internet connection.');
+      } else {
+        this.toast.error('Something went wrong. Please try again later.');
+      }
     } finally {
       this.loading = false;
     }

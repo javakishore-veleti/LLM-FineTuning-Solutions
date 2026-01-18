@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import secrets
 from datetime import datetime, timedelta
@@ -36,16 +36,29 @@ class TokenResp(BaseModel):
 
 @router.post('/signup')
 def signup(payload: SignUpReq):
-    existing = cust_dao.get_customer_by_email(payload.email)
+    # Normalize email to lowercase and strip whitespace
+    email = payload.email.lower().strip()
+
+    # Check if email already exists
+    existing = cust_dao.get_customer_by_email(email)
     if existing:
         raise HTTPException(status_code=400, detail='Email already in use')
+
     ph = hash_password(payload.password)
-    cust = cust_dao.create_customer({'first_name': payload.first_name, 'last_name': payload.last_name, 'email': payload.email, 'password_hash': ph})
+    cust = cust_dao.create_customer({
+        'first_name': payload.first_name.strip(),
+        'last_name': payload.last_name.strip(),
+        'email': email,
+        'password_hash': ph
+    })
     return {'customer_id': cust.customer_id}
 
 @router.post('/login', response_model=TokenResp)
 def login(payload: LoginReq):
-    cust = cust_dao.get_customer_by_email(payload.email)
+    # Normalize email to lowercase and strip whitespace
+    email = payload.email.lower().strip()
+
+    cust = cust_dao.get_customer_by_email(email)
     if not cust or not verify_password(payload.password, cust.password_hash):
         raise HTTPException(status_code=401, detail='Invalid credentials')
     # create token

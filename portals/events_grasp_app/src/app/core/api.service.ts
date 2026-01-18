@@ -81,4 +81,168 @@ export class ApiService {
   async publishEvent(eventId: number) {
     return await this.request<any>(`/api/events/${eventId}/publish`, { method: 'POST' });
   }
+
+  // Dashboard
+  async getDashboardData(customerId: number = 1, limit: number = 5): Promise<DashboardDataResponse> {
+    return await this.request<DashboardDataResponse>(`/api/dashboard/?customer_id=${customerId}&limit=${limit}`);
+  }
+
+  async getDashboardStats(customerId: number = 1): Promise<DashboardDataResponse> {
+    return await this.request<DashboardDataResponse>(`/api/dashboard/stats?customer_id=${customerId}`);
+  }
+
+  // Scraping Logs
+  async getEventsWithScrapingSummary(customerId: number = 1): Promise<ScrapingLogsResponse> {
+    return await this.request<ScrapingLogsResponse>(`/api/scraping-logs/events?customer_id=${customerId}`);
+  }
+
+  async getScrapingLogsForEvent(eventId: number, limit: number = 50): Promise<ScrapingLogsResponse> {
+    return await this.request<ScrapingLogsResponse>(`/api/scraping-logs/events/${eventId}/logs?limit=${limit}`);
+  }
+
+  async getScrapedFilesForEvent(eventId: number, limit: number = 100): Promise<ScrapingLogsResponse> {
+    return await this.request<ScrapingLogsResponse>(`/api/scraping-logs/events/${eventId}/files?limit=${limit}`);
+  }
+
+  // Vector Stores
+  async getVectorStores(eventId?: number, customerId?: number, limit: number = 100): Promise<VectorStoresResponse> {
+    const params = new URLSearchParams();
+    if (eventId) params.append('event_id', eventId.toString());
+    if (customerId) params.append('customer_id', customerId.toString());
+    params.append('limit', limit.toString());
+    return await this.request<VectorStoresResponse>(`/api/vector-stores/?${params.toString()}`);
+  }
+
+  async getVectorStore(vectorStoreId: number): Promise<VectorStoresResponse> {
+    return await this.request<VectorStoresResponse>(`/api/vector-stores/${vectorStoreId}`);
+  }
+
+  async createVectorStore(payload: VectorStoreCreatePayload): Promise<VectorStoresResponse> {
+    return await this.request<VectorStoresResponse>('/api/vector-stores/', { method: 'POST', body: payload });
+  }
+
+  async updateVectorStore(vectorStoreId: number, payload: VectorStoreUpdatePayload): Promise<VectorStoresResponse> {
+    return await this.request<VectorStoresResponse>(`/api/vector-stores/${vectorStoreId}`, { method: 'PUT', body: payload });
+  }
+
+  async deleteVectorStore(vectorStoreId: number): Promise<VectorStoresResponse> {
+    return await this.request<VectorStoresResponse>(`/api/vector-stores/${vectorStoreId}`, { method: 'DELETE' });
+  }
 }
+
+// Dashboard response interfaces
+export interface DashboardStats {
+  events: number;
+  conversations: number;
+  vector_stores: number;
+  providers: number;
+}
+
+export interface RecentEvent {
+  event_id: number;
+  name: string;
+  source: string;
+  indexed: boolean;
+}
+
+export interface RecentConversation {
+  conversation_id: number;
+  title: string;
+  messages: number;
+  time_ago: string;
+}
+
+export interface DashboardDataResponse {
+  success: boolean;
+  message?: string;
+  stats?: DashboardStats;
+  recent_events?: RecentEvent[];
+  recent_conversations?: RecentConversation[];
+}
+
+// Scraping Logs interfaces
+export interface EventSummary {
+  event_id: number;
+  event_name: string;
+  source_url: string;
+  total_scrapes: number;
+  total_files: number;
+  last_scrape_date?: string;
+}
+
+export interface ScrapingLog {
+  scraping_log_id: number;
+  event_id: number;
+  source_location: string;
+  source_location_type: string;
+  start_time?: string;
+  end_time?: string;
+  status: string;
+  output_location?: string;
+  output_location_type?: string;
+  files_scraped: number;
+  error_message?: string;
+  created_at?: string;
+  duration?: string;
+}
+
+export interface ScrapedFile {
+  file_id: number;
+  file_name: string;
+  file_display_name?: string;
+  source_file_location: string;
+  source_location_type: string;
+  file_size_bytes?: number;
+  file_size_display?: string;
+  status: string;
+  uploaded_flag: boolean;
+  created_at?: string;
+}
+
+export interface ScrapingLogsResponse {
+  success: boolean;
+  message?: string;
+  events?: EventSummary[];
+  scraping_logs?: ScrapingLog[];
+  scraped_files?: ScrapedFile[];
+}
+
+// Vector Stores interfaces
+export interface VectorStore {
+  vector_store_id: number;
+  event_id: number;
+  event_name?: string;
+  vector_store_provider: string;
+  vector_store_db_name: string;
+  vector_store_db_link?: string;
+  status: string;
+  files_count: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface VectorStoreCreatePayload {
+  event_id: number;
+  vector_store_provider: string;
+  vector_store_db_name: string;
+  vector_store_db_link?: string;
+  vector_config_json?: string;
+}
+
+export interface VectorStoreUpdatePayload {
+  vector_store_provider?: string;
+  vector_store_db_name?: string;
+  vector_store_db_link?: string;
+  status?: string;
+  is_active?: boolean;
+}
+
+export interface VectorStoresResponse {
+  success: boolean;
+  message?: string;
+  vector_stores?: VectorStore[];
+  vector_store?: VectorStore;
+  total_count?: number;
+}
+

@@ -10,6 +10,15 @@ import logging
 import warnings
 from sqlalchemy.exc import SAWarning
 
+# Configure logging to print to console
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+
 # Suppress SQLAlchemy SAWarning messages that appear when models are rebound to existing metadata
 warnings.filterwarnings('ignore', category=SAWarning)
 # Lower SQLAlchemy logging to ERROR to avoid noisy INFO/WARNING logs
@@ -26,6 +35,7 @@ from .modules.core.models.customer_session import create_customer_session_model
 
 app = FastAPI(title="Events Grasp Service")
 logger = logging.getLogger('events_grasp_service')
+logger.info("Starting Events Grasp Service...")
 
 # Load config if available
 if os.path.exists(os.path.join(os.getcwd(), 'backend-settings.json')):
@@ -70,11 +80,17 @@ from .modules.core.dao.impl.provider_dao import ProviderDAO
 from .modules.api.events.routes import router as events_router
 from .modules.api.auth import routes as auth_routes
 from .modules.api.customer import routes as customer_routes
+from .modules.api.dashboard.routes import router as dashboard_router
+from .modules.api.scraping.routes import router as scraping_router
+from .modules.api.vector_dbs.routes import router as vector_stores_router
 
 # register routers
 app.include_router(events_router)
 app.include_router(auth_routes.router)
 app.include_router(customer_routes.router)
+app.include_router(dashboard_router)
+app.include_router(scraping_router)
+app.include_router(vector_stores_router)
 
 # --- Events endpoints moved to modules/api/events/routes.py ---
 # The router above now provides all /api/events/* endpoints (CRUD via EventServiceSingleton).

@@ -318,10 +318,22 @@ export class LoginComponent {
         this.toast.success('🎉 Welcome back! Ready to chat with your data');
         await this.router.navigateByUrl(this.redirect || '/dashboard');
       } else {
-        this.toast.error('Invalid email or password');
+        this.toast.error('Invalid email or password. Please try again.');
       }
     } catch (e: any) {
-      this.toast.error('Login failed: ' + (e?.message || 'Please try again'));
+      // Show user-friendly error messages based on error type
+      const status = e?.status;
+      if (status === 401) {
+        this.toast.error('Invalid email or password. Please check your credentials.');
+      } else if (status === 403) {
+        this.toast.error('Your account has been locked. Please contact support.');
+      } else if (status === 404) {
+        this.toast.error('Account not found. Please sign up first.');
+      } else if (status === 0 || status === 503 || status === 504) {
+        this.toast.error('Unable to connect to server. Please check your internet connection.');
+      } else {
+        this.toast.error('Something went wrong. Please try again later.');
+      }
     } finally {
       this.loading = false;
     }

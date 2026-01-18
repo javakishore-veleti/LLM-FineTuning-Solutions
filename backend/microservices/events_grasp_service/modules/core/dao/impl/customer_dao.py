@@ -9,10 +9,12 @@ class CustomerDAO:
     def create_customer(self, data: dict):
         db: Session = self.dbm.get_session()
         try:
+            # Normalize email to lowercase and strip whitespace
+            email = data.get('email', '').lower().strip()
             cust = self.Customer(
                 first_name=data.get('first_name'),
                 last_name=data.get('last_name'),
-                email=data.get('email'),
+                email=email,
                 password_hash=data.get('password_hash')
             )
             db.add(cust)
@@ -32,7 +34,9 @@ class CustomerDAO:
     def get_customer_by_email(self, email: str):
         db = self.dbm.get_session()
         try:
-            return db.query(self.Customer).filter(self.Customer.email == email).first()
+            # Case-insensitive email comparison
+            from sqlalchemy import func
+            return db.query(self.Customer).filter(func.lower(self.Customer.email) == email.lower().strip()).first()
         finally:
             db.close()
 
