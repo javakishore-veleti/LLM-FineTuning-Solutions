@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '../core/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -34,20 +36,20 @@ import { CommonModule } from '@angular/common';
                 Home
               </a>
             </li>
-            <li class="nav-item" routerLinkActive="active-top" [routerLinkActiveOptions]="{ exact: false }">
-              <a class="nav-link" routerLink="/conversations">
+            <li class="nav-item" [class.active-top]="false">
+              <a class="nav-link" (click)="navigateOrLogin('/conversations')">
                 <i class="bi bi-chat-dots-fill me-1"></i>
                 Conversations
               </a>
             </li>
             <li class="nav-item" routerLinkActive="active-top" [routerLinkActiveOptions]="{ exact: false }">
-              <a class="nav-link" routerLink="/administration">
+              <a class="nav-link" (click)="navigateOrLogin('/administration')">
                 <i class="bi bi-gear-fill me-1"></i>
                 Administration
               </a>
             </li>
             <li class="nav-item" routerLinkActive="active-top" [routerLinkActiveOptions]="{ exact: false }">
-              <a class="nav-link" routerLink="/settings">
+              <a class="nav-link" (click)="navigateOrLogin('/settings')">
                 <i class="bi bi-sliders me-1"></i>
                 Settings
               </a>
@@ -58,4 +60,14 @@ import { CommonModule } from '@angular/common';
     </nav>
   `
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+  constructor(private auth: AuthService, private router: Router) {}
+
+  navigateOrLogin(path: string) {
+    if (this.auth.isAuthenticated()) {
+      this.router.navigateByUrl(path);
+    } else {
+      this.router.navigate(['/login'], { queryParams: { redirect: path } });
+    }
+  }
+}
