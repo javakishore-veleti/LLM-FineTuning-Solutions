@@ -207,11 +207,16 @@ marimo/_lsp/
 __marimo__/
 /LLMFineTuningSolutions_credentials.json
 
-# Activation helper scripts (generated)
-activate-venv.sh
-activate-venv.bat
-activate-venv.ps1
+# Activation helper scripts (generated in scripts/ folder)
+scripts/activate-venv.sh
+scripts/activate-venv.bat
+scripts/activate-venv.ps1
 
 # Node modules (if any)
 node_modules/
 package-lock.json
+
+# OpenAI key loader scripts (generated in scripts/ folder)
+scripts/load-openai-key.sh
+scripts/load-openai-key.bat
+scripts/load-openai-key.ps1

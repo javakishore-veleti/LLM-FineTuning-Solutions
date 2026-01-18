@@ -1,0 +1,39 @@
+{
+  "name": "llm-finetuning-solutions",
+  "version": "1.0.0",
+  "description": "A comprehensive toolkit for fine-tuning Large Language Models (LLMs) using AWS Bedrock, OpenAI, and Anthropic Claude APIs",
+  "scripts": {
+    "setup": "npm run setup:venv && npm run setup:keys",
+    "setup:venv": "node scripts/setup-python-env.js",
+    "setup:keys": "npm run setup:openai",
+    "setup:openai": "node scripts/setup-openai-key.js",
+    "setup:all": "npm run setup:venv && npm run setup:keys",
+    "check:openai": "node scripts/setup-openai-key.js --check",
+    "update:openai": "node scripts/setup-openai-key.js --update",
+    "load:openai": "node scripts/setup-openai-key.js --load",
+    "verify:openai": "node scripts/setup-openai-key.js --verify",
+    "activate:info": "node scripts/setup-python-env.js --activate-info",
+    "prestart": "npm run check:openai",
+    "start": "echo 'Activate venv with: source ./scripts/activate-venv.sh'"
+  },
+  "keywords": [
+    "llm",
+    "fine-tuning",
+    "aws-bedrock",
+    "openai",
+    "claude",
+    "anthropic",
+    "machine-learning",
+    "python"
+  ],
+  "author": "javakishore-veleti",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/javakishore-veleti/LLM-FineTuning-Solutions.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

@@ -64,21 +64,21 @@ After running the setup, use the generated helper scripts:
 
 **macOS/Linux:**
 ```bash
-source ./activate-venv.sh
+source ./scripts/activate-venv.sh
 # or manually:
 source ~/runtime_data/python_venvs/LLM-FineTuning-Solutions/bin/activate
 ```
 
 **Windows (Command Prompt):**
 ```cmd
-.\activate-venv.bat
+call scripts\activate-venv.bat
 REM or manually:
 %USERPROFILE%\runtime_data\python_venvs\LLM-FineTuning-Solutions\Scripts\activate.bat
 ```
 
 **Windows (PowerShell):**
 ```powershell
-.\activate-venv.ps1
+. .\scripts\activate-venv.ps1
 # or manually:
 & $env:USERPROFILE\runtime_data\python_venvs\LLM-FineTuning-Solutions\Scripts\Activate.ps1
 ```
@@ -177,29 +177,118 @@ export AWS_PROFILE=LLMFineTuningSolutions
 aws sts get-caller-identity
 ```
 
+## 🔑 OpenAI API Key Setup
+
+This project stores API keys securely outside the project directory.
+
+### Key Storage Location
+
+| OS | Path |
+|----|------|
+| **macOS/Linux** | `~/runtime_data/keys/openai/` |
+| **Windows** | `%USERPROFILE%\runtime_data\keys\openai\` |
+
+### NPM Commands for OpenAI Key Management
+
+| Command | Description |
+|---------|-------------|
+| `npm run check:openai` | Check if OpenAI key exists (prompts to set up if missing) |
+| `npm run setup:openai` | Set up OpenAI API key (prompts for key input) |
+| `npm run update:openai` | Update/replace existing OpenAI API key |
+| `npm run verify:openai` | Verify the key format is valid |
+| `npm run load:openai` | Show command to load key into terminal |
+
+### Setup Steps
+
+1. **Check if key exists** (will prompt you to set up if missing):
+   ```bash
+   npm run check:openai
+   ```
+
+2. **If key is missing**, get your API key from [OpenAI Platform](https://platform.openai.com/api-keys) and run:
+   ```bash
+   npm run setup:openai
+   ```
+
+3. **Enter your API key** when prompted (starts with `sk-`)
+
+4. **Load the key** before running Python scripts:
+
+   **macOS/Linux:**
+   ```bash
+   source ./scripts/load-openai-key.sh
+   ```
+
+   **Windows (CMD):**
+   ```cmd
+   call scripts\load-openai-key.bat
+   ```
+
+   **Windows (PowerShell):**
+   ```powershell
+   . .\scripts\load-openai-key.ps1
+   ```
+
+### Update Your API Key
+
+If you need to update your API key:
+```bash
+npm run update:openai
+```
+
+### Using in Python
+
+```python
+from openai import OpenAI
+
+# Automatically uses OPENAI_API_KEY environment variable
+client = OpenAI()
+
+# Make a request
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+
+For detailed instructions, see: `.github/instructions/02-openai-api-key-setup.instructions.md`
+
 ## 📁 Project Structure
 
 ```
 LLM-FineTuning-Solutions/
 ├── .github/
 │   └── instructions/
-│       └── 01-aws-iam-user-setup.instructions.md  # AWS setup guide
+│       ├── 01-aws-iam-user-setup.instructions.md  # AWS setup guide
+│       └── 02-openai-api-key-setup.instructions.md # OpenAI key setup guide
 ├── scripts/
 │   ├── setup_aws_user.sh                          # AWS IAM setup script
-│   └── setup-python-env.js                        # Python venv setup (cross-platform)
+│   ├── setup-python-env.js                        # Python venv setup (cross-platform)
+│   ├── setup-openai-key.js                        # OpenAI key setup (cross-platform)
+│   ├── activate-venv.sh                           # macOS/Linux venv activation (generated)
+│   ├── activate-venv.bat                          # Windows CMD venv activation (generated)
+│   ├── activate-venv.ps1                          # Windows PowerShell venv activation (generated)
+│   ├── load-openai-key.sh                         # macOS/Linux OpenAI key loader (generated)
+│   ├── load-openai-key.bat                        # Windows CMD OpenAI key loader (generated)
+│   └── load-openai-key.ps1                        # Windows PowerShell OpenAI key loader (generated)
 ├── .env                                           # Environment variables (gitignored)
 ├── .gitignore
-├── activate-venv.sh                               # macOS/Linux activation helper
-├── activate-venv.bat                              # Windows CMD activation helper
-├── activate-venv.ps1                              # Windows PowerShell activation helper
 ├── LICENSE
 ├── package.json                                   # NPM scripts for setup
 ├── README.md
 └── requirements.txt
 
-# Virtual Environment Location (not in project):
-~/runtime_data/python_venvs/LLM-FineTuning-Solutions/  # macOS/Linux
-%USERPROFILE%\runtime_data\python_venvs\LLM-FineTuning-Solutions\  # Windows
+# External Directories (not in project):
+~/runtime_data/
+├── python_venvs/
+│   └── LLM-FineTuning-Solutions/                  # Python virtual environment
+└── keys/
+    └── openai/
+        ├── openai_api_key.txt                     # Your API key
+        ├── openai_env.sh                          # Bash export script
+        ├── openai_env.bat                         # Windows CMD script
+        └── openai_env.ps1                         # PowerShell script
 ```
 
 ## 🔒 Security Notes

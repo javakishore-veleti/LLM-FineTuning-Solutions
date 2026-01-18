@@ -283,10 +283,16 @@ function printActivationInstructions(osType, venvPath) {
 }
 
 /**
- * Create a convenience activation script in the project
+ * Create a convenience activation script in the scripts/ folder
  */
 function createActivationHelper(osType, venvPath, projectPath) {
     const activation = getActivationScript(osType, venvPath);
+    const scriptsDir = path.join(projectPath, 'scripts');
+
+    // Ensure scripts directory exists
+    if (!fs.existsSync(scriptsDir)) {
+        fs.mkdirSync(scriptsDir, { recursive: true });
+    }
 
     if (osType === 'windows') {
         // Create batch file for Windows
@@ -295,7 +301,7 @@ echo Activating LLM-FineTuning-Solutions virtual environment...
 call "${activation.cmd}"
 echo Virtual environment activated!
 `;
-        fs.writeFileSync(path.join(projectPath, 'activate-venv.bat'), batContent);
+        fs.writeFileSync(path.join(scriptsDir, 'activate-venv.bat'), batContent);
 
         // Create PowerShell script
         const ps1Content = `# Activate LLM-FineTuning-Solutions virtual environment
@@ -303,9 +309,9 @@ Write-Host "Activating LLM-FineTuning-Solutions virtual environment..." -Foregro
 & "${activation.powershell}"
 Write-Host "Virtual environment activated!" -ForegroundColor Green
 `;
-        fs.writeFileSync(path.join(projectPath, 'activate-venv.ps1'), ps1Content);
+        fs.writeFileSync(path.join(scriptsDir, 'activate-venv.ps1'), ps1Content);
 
-        logSuccess('Created activate-venv.bat and activate-venv.ps1');
+        logSuccess('Created scripts/activate-venv.bat and scripts/activate-venv.ps1');
     } else {
         // Create shell script for macOS/Linux
         const shContent = `#!/bin/bash
@@ -314,11 +320,11 @@ echo "Activating LLM-FineTuning-Solutions virtual environment..."
 source "${activation.bash}"
 echo "Virtual environment activated!"
 `;
-        const scriptPath = path.join(projectPath, 'activate-venv.sh');
+        const scriptPath = path.join(scriptsDir, 'activate-venv.sh');
         fs.writeFileSync(scriptPath, shContent);
         fs.chmodSync(scriptPath, '755');
 
-        logSuccess('Created activate-venv.sh');
+        logSuccess('Created scripts/activate-venv.sh');
     }
 }
 
@@ -415,10 +421,10 @@ async function main() {
     log('2. Run your Python scripts with the activated environment', 'blue');
     log('\nOr use the helper script:', 'yellow');
     if (osType === 'windows') {
-        log('  .\\activate-venv.bat  (Command Prompt)', 'blue');
-        log('  .\\activate-venv.ps1  (PowerShell)', 'blue');
+        log('  call scripts\\activate-venv.bat  (Command Prompt)', 'blue');
+        log('  . .\\scripts\\activate-venv.ps1  (PowerShell)', 'blue');
     } else {
-        log('  source ./activate-venv.sh', 'blue');
+        log('  source ./scripts/activate-venv.sh', 'blue');
     }
 }
 
