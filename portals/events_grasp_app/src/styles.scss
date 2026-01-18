@@ -1,1 +1,140 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --brand-primary: #0d6efd;
+  --bg: #f7f8fb;
+  /* refined, professional gradient colors */
+  --nav-gradient-1: #4f46e5; /* indigo-600 */
+  --nav-gradient-2: #06b6d4; /* teal-400 */
+  --nav-gradient-3: #0ea5e9; /* sky-500 */
+  --active-accent: #ff7a00; /* orange accent for active items */
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+/* Navbar custom styling - subtle professional gradient */
+.navbar-custom {
+  background: linear-gradient(90deg, var(--nav-gradient-1) 0%, var(--nav-gradient-2) 50%, var(--nav-gradient-3) 100%);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+/* make the toggler icon visible on gradient */
+.navbar-custom .navbar-toggler {
+  border-color: rgba(255,255,255,0.15);
+}
+
+.navbar-custom .navbar-brand {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.navbar-custom .brand-title {
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+}
+
+/* Make nav links more obviously clickable */
+.navbar-custom .nav-link {
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+  transition: color 0.12s ease, transform 0.12s ease;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+}
+
+.navbar-custom .nav-link:hover {
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.navbar-custom .nav-link.active {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+}
+
+/* Top navbar active indicator */
+.navbar-custom .active-top > .nav-link {
+  background: rgba(255,255,255,0.14);
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Ensure top nav icons and text remain white on active */
+.navbar-custom .active-top > .nav-link, .navbar-custom .active-top > .nav-link i {
+  color: #fff !important;
+}
+
+/* Reduce main top spacing so content sits closer under the navbar */
+.main {
+  padding-top: 0.5rem; /* previously 2rem */
+}
+
+.container {
+  max-width: 1100px;
+}
+
+.navbar-brand img {
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.card {
+  border-radius: 8px;
+}
+
+/* Sidebar styling */
+.sidebar {
+  min-height: calc(100vh - 56px); /* make sidebar span height (approx) */
+}
+
+/* Make left nav links occupy full width & clickable */
+.sidebar .nav-link {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  color: #0b5ed7; /* bootstrap primary */
+  cursor: pointer;
+}
+
+/* Stronger visible active state using the accent color */
+.sidebar .nav-link.active {
+  background: rgba(255,122,0,0.08); /* light orange */
+  border-left: 4px solid var(--active-accent);
+  border-radius: 0 6px 6px 0;
+  color: var(--active-accent);
+  font-weight: 700;
+}
+
+/* Input group icons styling */
+.input-group .form-icon {
+  background: transparent;
+  border-right: 0;
+  color: rgba(0,0,0,0.6);
+}
+
+.input-group .form-control {
+  border-left: 0;
+}
+
+/* Slight card header alignment */
+.card-body .fs-3 {
+  line-height: 1;
+}
+
+/* small responsive tweaks */
+@media (max-width: 767px) {
+  .sidebar {
+    min-height: auto;
+  }
+  .main {
+    padding-top: 0.25rem;
+  }
+}

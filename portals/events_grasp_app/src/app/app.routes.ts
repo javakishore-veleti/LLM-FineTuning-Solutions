@@ -1,3 +1,61 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'conversations',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/conversations/conversations.component').then(m => m.ConversationsComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/conversations/conversation-detail.component').then(m => m.ConversationDetailComponent)
+      }
+    ]
+  },
+  {
+    path: 'settings',
+    loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent)
+  },
+  {
+    path: 'administration',
+    loadComponent: () => import('./features/administration/admin-layout.component').then(m => m.AdminLayoutComponent),
+    children: [
+      {
+        path: 'events',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/administration/events.component').then(m => m.AdminEventsComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/administration/event-create.component').then(m => m.EventCreateComponent)
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/administration/event-detail.component').then(m => m.EventDetailComponent)
+          }
+        ]
+      },
+      {
+        path: 'vector-stores',
+        loadComponent: () => import('./features/administration/vector-stores.component').then(m => m.AdminVectorStoresComponent)
+      },
+      {
+        path: 'scraping-logs',
+        loadComponent: () => import('./features/administration/scraping-logs.component').then(m => m.AdminScrapingLogsComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'events',
+        pathMatch: 'full'
+      }
+    ]
+  }
+];

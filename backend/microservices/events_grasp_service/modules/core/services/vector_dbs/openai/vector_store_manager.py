@@ -136,15 +136,61 @@ class OpenAIVectorStoreManager:
         try:
             logger.info(f"Checking OpenAI for existing vector stores named '{self.store_name}'...")
             stores = self.client.vector_stores.list()
-            for store in stores.data:
-                if store.name == self.store_name:
-                    logger.info(f"Found existing vector store on OpenAI: {store.id}")
-                    return {
-                        'id': store.id,
-                        'name': store.name,
-                        'file_counts': store.file_counts,
-                        'source': 'openai_api'
-                    }
+            matches = [s for s in stores.data if getattr(s, 'name', None) == self.store_name]
+
+            if not matches:
+                return None
+
+            if len(matches) == 1:
+                store = matches[0]
+                logger.info(f"Found existing vector store on OpenAI: {store.id}")
+                return {
+                    'id': store.id,
+                    'name': store.name,
+                    'file_counts': store.file_counts,
+                    'source': 'openai_api'
+                }
+
+            # Multiple stores found with same name - handle according to env var
+            logger.warning(f"Multiple ({len(matches)}) vector stores found on OpenAI with the name '{self.store_name}'.")
+
+            # If environment variable requests automatic cleanup, delete duplicates and keep the first
+            delete_duplicates = os.environ.get('DELETE_DUPLICATE_OPENAI_STORES', 'false').lower() in ('1', 'true', 'yes')
+
+            chosen = matches[0]
+            duplicate_ids = [s.id for s in matches[1:]]
+
+            if delete_duplicates:
+                logger.info("DELETE_DUPLICATE_OPENAI_STORES=true -> deleting duplicate stores and their files")
+                for dup_id in duplicate_ids:
+                    try:
+                        # Attempt to delete files attached to the duplicate store first
+                        try:
+                            vs_files = self.client.vector_stores.files.list(vector_store_id=dup_id)
+                            for vs_file in vs_files.data:
+                                try:
+                                    self.client.files.delete(vs_file.id)
+                                    logger.info(f"Deleted file {vs_file.id} from duplicate store {dup_id}")
+                                except Exception as e:
+                                    logger.warning(f"Could not delete file {vs_file.id}: {e}")
+                        except Exception as e:
+                            logger.warning(f"Could not list files for duplicate store {dup_id}: {e}")
+
+                        # Delete the duplicate store
+                        self.client.vector_stores.delete(dup_id)
+                        logger.info(f"Deleted duplicate vector store: {dup_id}")
+                    except Exception as e:
+                        logger.warning(f"Failed to delete duplicate store {dup_id}: {e}")
+            else:
+                logger.warning("To automatically remove duplicates set environment variable DELETE_DUPLICATE_OPENAI_STORES=true")
+
+            logger.info(f"Using vector store: {chosen.id}")
+            return {
+                'id': chosen.id,
+                'name': chosen.name,
+                'file_counts': chosen.file_counts,
+                'source': 'openai_api'
+            }
         except Exception as e:
             logger.warning(f"Could not list vector stores from OpenAI: {e}")
 

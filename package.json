@@ -19,29 +19,32 @@
     "prestart": "npm run check:openai",
     "start": "echo 'Activate venv with: source ./scripts/activate-venv.sh'",
 
+    "backend:start": "node scripts/run-python.js backend/microservices/events_grasp_service/run.py",
+    "backend:uvicorn": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/run_uvicorn.py",
+
     "scrape": "npm run scrape:aws-reinvent",
-    "scrape:aws-reinvent": "node scripts/run-python.js modules/web_scraping/aws_reinvent_2025/scraper.py",
+    "scrape:aws-reinvent": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/web_scraping/aws_reinvent_2025/scraper.py",
     "scrape:refresh": "npm run scrape:aws-reinvent:refresh",
-    "scrape:aws-reinvent:refresh": "node scripts/run-python.js modules/web_scraping/aws_reinvent_2025/scraper.py --refresh",
+    "scrape:aws-reinvent:refresh": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/web_scraping/aws_reinvent_2025/scraper.py --refresh",
 
     "index": "npm run vectordb:create",
     "index:update": "npm run vectordb:update",
 
-    "vectordb:create": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py create",
-    "vectordb:update": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py update",
-    "vectordb:delete": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py delete",
-    "vectordb:status": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py status",
-    "vectordb:exists": "node scripts/run-python.js modules/vector_dbs/openai/vector_store_manager.py status",
+    "vectordb:create": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/vector_store_manager.py create",
+    "vectordb:update": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/vector_store_manager.py update",
+    "vectordb:delete": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/vector_store_manager.py delete",
+    "vectordb:status": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/vector_store_manager.py status",
+    "vectordb:exists": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/vector_store_manager.py status",
 
-    "openai:summary": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py summary",
-    "openai:files:list": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py summary --json",
-    "openai:files:delete-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-files",
-    "openai:files:delete": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-file",
-    "openai:stores:delete-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-stores",
-    "openai:cleanup-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-all",
+    "openai:summary": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py summary",
+    "openai:files:list": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py summary --json",
+    "openai:files:delete-all": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py delete-files",
+    "openai:files:delete": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py delete-file",
+    "openai:stores:delete-all": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py delete-stores",
+    "openai:cleanup-all": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py delete-all",
 
-    "cleanup:all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py cleanup-everything",
-    "cleanup:local": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-local-data",
+    "cleanup:all": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py cleanup-everything",
+    "cleanup:local": "node scripts/run-python.js backend/microservices/events_grasp_service/modules/core/services/vector_dbs/openai/storage_cleanup.py delete-local-data",
 
     "ui:install": "cd ui && npm install",
     "ui:start": "cd ui && ng serve --open",
@@ -70,4 +73,3 @@
     "node": ">=14.0.0"
   }
 }
-
