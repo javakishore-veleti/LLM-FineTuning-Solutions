@@ -83,6 +83,7 @@ from .modules.api.customer import routes as customer_routes
 from .modules.api.dashboard.routes import router as dashboard_router
 from .modules.api.scraping.routes import router as scraping_router
 from .modules.api.vector_dbs.routes import router as vector_stores_router
+from .modules.api.credentials.routes import router as credentials_router
 
 # register routers
 app.include_router(events_router)
@@ -91,6 +92,7 @@ app.include_router(customer_routes.router)
 app.include_router(dashboard_router)
 app.include_router(scraping_router)
 app.include_router(vector_stores_router)
+app.include_router(credentials_router)
 
 # --- Events endpoints moved to modules/api/events/routes.py ---
 # The router above now provides all /api/events/* endpoints (CRUD via EventServiceSingleton).

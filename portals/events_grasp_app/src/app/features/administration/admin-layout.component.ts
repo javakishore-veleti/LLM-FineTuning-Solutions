@@ -172,6 +172,18 @@ import { RouterModule } from '@angular/router';
             </li>
           </ul>
         </nav>
+
+        <nav class="nav-section">
+          <p class="nav-section-title">Configuration</p>
+          <ul class="nav-menu">
+            <li class="nav-menu-item">
+              <a class="nav-menu-link" routerLink="/administration/credentials" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
+                <span class="nav-icon">🔐</span>
+                <span class="nav-text">Credentials</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </aside>
 
       <!-- Main Content -->

@@ -72,6 +72,19 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'credentials',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/administration/credentials.component').then(m => m.AdminCredentialsComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/administration/credential-create.component').then(m => m.CredentialCreateComponent)
+          }
+        ]
+      },
+      {
         path: 'scraping-logs',
         loadComponent: () => import('./features/administration/scraping-logs.component').then(m => m.AdminScrapingLogsComponent)
       },

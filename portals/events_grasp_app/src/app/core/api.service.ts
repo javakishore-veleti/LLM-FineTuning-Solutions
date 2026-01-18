@@ -160,6 +160,44 @@ export class ApiService {
   async createVectorStoreWithoutEvent(payload: VectorStoreCreateWithoutEventPayload): Promise<VectorStoresResponse> {
     return await this.request<VectorStoresResponse>('/api/vector-stores/providers/create-standalone', { method: 'POST', body: payload });
   }
+
+  // Credentials API
+  async getCredentialProviders(): Promise<CredentialProvidersResponse> {
+    return await this.request<CredentialProvidersResponse>('/api/credentials/providers');
+  }
+
+  async getCredentialAuthTypes(providerType: string): Promise<AuthTypesResponse> {
+    return await this.request<AuthTypesResponse>(`/api/credentials/providers/${providerType}/auth-types`);
+  }
+
+  async getCredentialSchema(providerType: string, authType: string): Promise<CredentialSchemaResponse> {
+    return await this.request<CredentialSchemaResponse>(`/api/credentials/providers/${providerType}/schema/${authType}`);
+  }
+
+  async getCredentials(providerType?: string): Promise<CredentialsListResponse> {
+    const params = providerType ? `?provider_type=${providerType}` : '';
+    return await this.request<CredentialsListResponse>(`/api/credentials/${params}`);
+  }
+
+  async getCredential(credentialId: number): Promise<CredentialResponse> {
+    return await this.request<CredentialResponse>(`/api/credentials/${credentialId}`);
+  }
+
+  async createCredential(payload: CredentialCreatePayload): Promise<CredentialCreateResponse> {
+    return await this.request<CredentialCreateResponse>('/api/credentials/', { method: 'POST', body: payload });
+  }
+
+  async updateCredential(credentialId: number, payload: CredentialUpdatePayload): Promise<BaseResponse> {
+    return await this.request<BaseResponse>(`/api/credentials/${credentialId}`, { method: 'PUT', body: payload });
+  }
+
+  async deleteCredential(credentialId: number): Promise<BaseResponse> {
+    return await this.request<BaseResponse>(`/api/credentials/${credentialId}`, { method: 'DELETE' });
+  }
+
+  async getCredentialsForVectorStore(vectorStoreProvider: string): Promise<CredentialsListResponse> {
+    return await this.request<CredentialsListResponse>(`/api/credentials/for-provider/${vectorStoreProvider}`);
+  }
 }
 
 // Dashboard response interfaces
@@ -350,5 +388,90 @@ export interface ValidationResponse {
 export interface ConnectionTestResponse {
   success: boolean;
   message: string;
+}
+
+// Credential interfaces
+export interface CredentialProvider {
+  provider_type: string;
+  name: string;
+  icon: string;
+  status: 'available' | 'coming_soon';
+  description: string;
+  auth_types: AuthType[];
+}
+
+export interface AuthType {
+  value: string;
+  label: string;
+  description: string;
+}
+
+export interface Credential {
+  credential_id: number;
+  customer_id: number;
+  credential_name: string;
+  provider_type: string;
+  provider_name: string;
+  provider_icon: string;
+  auth_type: string;
+  description?: string;
+  config?: { [key: string]: any };
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CredentialProvidersResponse {
+  success: boolean;
+  providers: CredentialProvider[];
+}
+
+export interface AuthTypesResponse {
+  success: boolean;
+  auth_types: AuthType[];
+}
+
+export interface CredentialSchemaResponse {
+  success: boolean;
+  schema: {
+    fields: ProviderSchemaField[];
+  };
+}
+
+export interface CredentialsListResponse {
+  success: boolean;
+  credentials: Credential[];
+  total_count: number;
+}
+
+export interface CredentialResponse {
+  success: boolean;
+  credential: Credential;
+}
+
+export interface CredentialCreatePayload {
+  credential_name: string;
+  provider_type: string;
+  auth_type: string;
+  config: { [key: string]: any };
+  description?: string;
+}
+
+export interface CredentialUpdatePayload {
+  credential_name?: string;
+  config?: { [key: string]: any };
+  description?: string;
+  is_active?: boolean;
+}
+
+export interface CredentialCreateResponse {
+  success: boolean;
+  message: string;
+  credential_id: number;
+}
+
+export interface BaseResponse {
+  success: boolean;
+  message?: string;
 }
 
