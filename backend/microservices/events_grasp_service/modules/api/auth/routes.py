@@ -69,9 +69,16 @@ def login(payload: LoginReq):
 
 @router.post('/logout')
 def logout(token: str):
+    from ...core.auth import get_customer_cache
+    
     s = sess_dao.get_by_token(token)
     if not s:
         raise HTTPException(status_code=404, detail='session not found')
+    
+    # Invalidate customer cache
+    cache = get_customer_cache()
+    cache.invalidate_customer(s.customer_id)
+    
     sess_dao.delete_session(s.session_id)
     return {'ok': True}
 

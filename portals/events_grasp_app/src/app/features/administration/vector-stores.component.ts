@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { ApiService, VectorStore } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-admin-vector-stores',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   styles: [`
     .vector-stores-container {
       padding: 0;
@@ -48,6 +49,7 @@ import { AuthService } from '../../core/auth.service';
       gap: 0.5rem;
       cursor: pointer;
       transition: all 0.2s;
+      text-decoration: none;
     }
     .btn-add-store:hover {
       transform: translateY(-2px);
@@ -281,10 +283,10 @@ import { AuthService } from '../../core/auth.service';
             </div>
             <p class="page-subtitle">Manage your vector databases for semantic search and RAG</p>
           </div>
-          <button class="btn-add-store" (click)="showAddModal = true">
+          <a class="btn-add-store" routerLink="/administration/vector-stores/new">
             <span>➕</span>
             Add Vector Store
-          </button>
+          </a>
         </div>
       </div>
 
@@ -347,10 +349,10 @@ import { AuthService } from '../../core/auth.service';
             <div class="empty-icon">🗄️</div>
             <div class="empty-text">No vector stores configured</div>
             <div class="empty-hint">Add a vector store to enable semantic search and RAG capabilities</div>
-            <button class="btn-add-store" style="margin: 0 auto; background: linear-gradient(135deg, #667eea, #764ba2); color: white;" (click)="showAddModal = true">
+            <a class="btn-add-store" style="margin: 0 auto; background: linear-gradient(135deg, #667eea, #764ba2); color: white;" routerLink="/administration/vector-stores/new">
               <span>🚀</span>
               Add Your First Vector Store
-            </button>
+            </a>
           </div>
 
           <!-- Vector Stores Grid -->
@@ -405,7 +407,6 @@ export class AdminVectorStoresComponent implements OnInit {
   vectorStores: VectorStore[] = [];
   loading = false;
   error: string | null = null;
-  showAddModal = false;
   private customerId: number | undefined;
 
   constructor(private api: ApiService, private auth: AuthService) {}

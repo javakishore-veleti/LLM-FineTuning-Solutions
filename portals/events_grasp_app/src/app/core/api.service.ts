@@ -128,6 +128,38 @@ export class ApiService {
   async deleteVectorStore(vectorStoreId: number): Promise<VectorStoresResponse> {
     return await this.request<VectorStoresResponse>(`/api/vector-stores/${vectorStoreId}`, { method: 'DELETE' });
   }
+
+  // Vector Store Providers
+  async getVectorStoreProviders(): Promise<ProvidersResponse> {
+    return await this.request<ProvidersResponse>('/api/vector-stores/providers/list');
+  }
+
+  async getProviderCategories(): Promise<ProviderCategoriesResponse> {
+    return await this.request<ProviderCategoriesResponse>('/api/vector-stores/providers/categories');
+  }
+
+  async getProviderSchema(providerType: string): Promise<ProviderSchemaResponse> {
+    return await this.request<ProviderSchemaResponse>(`/api/vector-stores/providers/${providerType}/schema`);
+  }
+
+  async validateProviderConfig(payload: ProviderConfigPayload): Promise<ValidationResponse> {
+    return await this.request<ValidationResponse>('/api/vector-stores/providers/validate', { method: 'POST', body: payload });
+  }
+
+  async testProviderConnection(providerType: string, config: any): Promise<ConnectionTestResponse> {
+    return await this.request<ConnectionTestResponse>('/api/vector-stores/providers/test-connection', {
+      method: 'POST',
+      body: { provider_type: providerType, config }
+    });
+  }
+
+  async createVectorStoreWithConfig(payload: ProviderConfigPayload): Promise<VectorStoresResponse> {
+    return await this.request<VectorStoresResponse>('/api/vector-stores/providers/create', { method: 'POST', body: payload });
+  }
+
+  async createVectorStoreWithoutEvent(payload: VectorStoreCreateWithoutEventPayload): Promise<VectorStoresResponse> {
+    return await this.request<VectorStoresResponse>('/api/vector-stores/providers/create-standalone', { method: 'POST', body: payload });
+  }
 }
 
 // Dashboard response interfaces
@@ -244,5 +276,79 @@ export interface VectorStoresResponse {
   vector_stores?: VectorStore[];
   vector_store?: VectorStore;
   total_count?: number;
+}
+
+// Vector Store Provider interfaces
+export interface VectorStoreProvider {
+  provider_type: string;
+  name: string;
+  category: string;
+  status: 'available' | 'coming_soon' | 'beta';
+  description: string;
+  icon: string;
+}
+
+export interface ProvidersResponse {
+  success: boolean;
+  providers: VectorStoreProvider[];
+}
+
+export interface ProviderCategoriesResponse {
+  success: boolean;
+  categories: { [category: string]: VectorStoreProvider[] };
+}
+
+export interface ProviderSchemaField {
+  name: string;
+  label: string;
+  type: 'text' | 'password' | 'number' | 'select' | 'checkbox' | 'textarea';
+  required: boolean;
+  placeholder?: string;
+  description?: string;
+  default?: any;
+  min?: number;
+  max?: number;
+  options?: { value: string; label: string }[];
+  showIf?: { [key: string]: any };
+}
+
+export interface ProviderSchema {
+  provider_type: string;
+  provider_name: string;
+  provider_description: string;
+  provider_status: string;
+  provider_category: string;
+  coming_soon?: boolean;
+  message?: string;
+  fields: ProviderSchemaField[];
+}
+
+export interface ProviderSchemaResponse {
+  success: boolean;
+  schema: ProviderSchema;
+}
+
+export interface ProviderConfigPayload {
+  event_id: number;
+  display_name: string;
+  provider_type: string;
+  config: { [key: string]: any };
+}
+
+export interface VectorStoreCreateWithoutEventPayload {
+  display_name: string;
+  provider_type: string;
+  config: { [key: string]: any };
+}
+
+export interface ValidationResponse {
+  success: boolean;
+  valid: boolean;
+  error?: string;
+}
+
+export interface ConnectionTestResponse {
+  success: boolean;
+  message: string;
 }
 

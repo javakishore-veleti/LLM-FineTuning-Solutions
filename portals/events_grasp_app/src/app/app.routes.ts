@@ -60,7 +60,16 @@ export const routes: Routes = [
       },
       {
         path: 'vector-stores',
-        loadComponent: () => import('./features/administration/vector-stores.component').then(m => m.AdminVectorStoresComponent)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/administration/vector-stores.component').then(m => m.AdminVectorStoresComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/administration/vector-store-create.component').then(m => m.VectorStoreCreateComponent)
+          }
+        ]
       },
       {
         path: 'scraping-logs',
