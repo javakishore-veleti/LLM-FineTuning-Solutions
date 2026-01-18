@@ -528,16 +528,21 @@ LLM-FineTuning-Solutions/
 ├── .github/
 │   └── instructions/
 │       ├── 01-aws-iam-user-setup.instructions.md  # AWS setup guide
-│       └── 02-openai-api-key-setup.instructions.md # OpenAI key setup guide
+│       ├── 02-openai-api-key-setup.instructions.md # OpenAI key setup guide
+│       └── 03-angular-ui-setup.instructions.md    # Angular UI & DB schema guide
 ├── modules/
 │   ├── vector_dbs/
 │   │   └── openai/
-│   │       └── vector_store_manager.py            # OpenAI vector store CRUD
+│   │       ├── vector_store_manager.py            # OpenAI vector store CRUD
+│   │       └── storage_cleanup.py                 # OpenAI storage cleanup
 │   └── web_scraping/
 │       └── aws_reinvent_2025/
 │           └── scraper.py                         # AWS re:Invent 2025 scraper
+├── ui/                                            # Angular UI (see 03-angular-ui-setup)
 ├── scripts/
 │   ├── run-python.js                              # Python script runner
+│   ├── show-first-time-commands.js                # Display first-time setup commands
+│   ├── show-daily-commands.js                     # Display daily usage commands
 │   ├── setup_aws_user.sh                          # AWS IAM setup script
 │   ├── setup-python-env.js                        # Python venv setup (cross-platform)
 │   ├── setup-openai-key.js                        # OpenAI key setup (cross-platform)

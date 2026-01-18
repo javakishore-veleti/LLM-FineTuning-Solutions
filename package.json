@@ -41,7 +41,12 @@
     "openai:cleanup-all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-all",
 
     "cleanup:all": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py cleanup-everything",
-    "cleanup:local": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-local-data"
+    "cleanup:local": "node scripts/run-python.js modules/vector_dbs/openai/storage_cleanup.py delete-local-data",
+
+    "ui:install": "cd ui && npm install",
+    "ui:start": "cd ui && ng serve --open",
+    "ui:build": "cd ui && ng build --configuration production",
+    "ui:test": "cd ui && ng test"
   },
   "keywords": [
     "llm",
