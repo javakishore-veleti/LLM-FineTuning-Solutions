@@ -296,7 +296,7 @@ export class LoginComponent {
   loading = false;
   submitted = false;
   showPassword = false;
-  private redirect = '/';
+  private redirect = '/dashboard';
 
   constructor(private auth: AuthService, private router: Router, private toast: ToastService, private route: ActivatedRoute) {
     this.route.queryParams.subscribe(q => {
@@ -316,7 +316,7 @@ export class LoginComponent {
       const ok = await this.auth.login(this.username, this.password);
       if (ok) {
         this.toast.success('🎉 Welcome back! Ready to chat with your data');
-        await this.router.navigateByUrl(this.redirect || '/');
+        await this.router.navigateByUrl(this.redirect || '/dashboard');
       } else {
         this.toast.error('Invalid email or password');
       }
