@@ -445,6 +445,28 @@ import { ApiService, VectorStoreProvider, ProviderSchema, ProviderSchemaField } 
                          placeholder="My Vector Store">
                   <div class="form-hint">A friendly name for this vector store</div>
                 </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    Credentials <span class="required">*</span>
+                  </label>
+                  <select class="form-control" [(ngModel)]="selectedCredentialId" (change)="onCredentialChange()">
+                    <option [ngValue]="null">Select credentials...</option>
+                    <option *ngFor="let cred of availableCredentials" [ngValue]="cred.credential_id">
+                      {{ cred.credential_name }} ({{ cred.auth_type }})
+                    </option>
+                  </select>
+                  <div class="form-hint" *ngIf="availableCredentials.length > 0">
+                    Select credentials to use for authentication
+                  </div>
+                  <div class="form-hint" *ngIf="availableCredentials.length === 0 && !loadingCredentials" style="color: #dc3545;">
+                    No credentials found for this provider.
+                    <a routerLink="/administration/credentials/new" style="color: #667eea;">Create one first</a>
+                  </div>
+                  <div class="form-hint" *ngIf="loadingCredentials">
+                    Loading credentials...
+                  </div>
+                </div>
               </div>
 
               <div class="form-section">
@@ -540,6 +562,9 @@ import { ApiService, VectorStoreProvider, ProviderSchema, ProviderSchemaField } 
                 <div style="margin-bottom: 1rem;">
                   <strong>Provider:</strong> {{ providerSchema?.provider_name || 'Unknown' }}
                 </div>
+                <div style="margin-bottom: 1rem;">
+                  <strong>Credentials:</strong> {{ getSelectedCredentialName() }}
+                </div>
                 <div>
                   <strong>Configuration:</strong>
                   <pre style="background: white; padding: 1rem; border-radius: 8px; margin-top: 0.5rem; overflow-x: auto;">{{ getConfigSummary() }}</pre>
@@ -601,9 +626,12 @@ export class VectorStoreCreateComponent implements OnInit {
   // Configuration
   providerSchema: ProviderSchema | null = null;
   displayName = '';
-  selectedEventId: number | null = null;
   configValues: { [key: string]: any } = {};
-  events: any[] = [];
+
+  // Credentials
+  availableCredentials: any[] = [];
+  selectedCredentialId: number | null = null;
+  loadingCredentials = false;
 
   // Connection test
   testing = false;
@@ -648,6 +676,8 @@ export class VectorStoreCreateComponent implements OnInit {
           // Initialize default values
           this.initializeDefaults();
         }
+        // Load credentials for this provider
+        await this.loadCredentialsForProvider();
       } catch (e) {
         console.error('Failed to load schema', e);
       } finally {
@@ -656,6 +686,29 @@ export class VectorStoreCreateComponent implements OnInit {
     }
     this.currentStep = step;
     this.connectionTestResult = null;
+  }
+
+  async loadCredentialsForProvider() {
+    if (!this.selectedProvider) return;
+
+    this.loadingCredentials = true;
+    this.availableCredentials = [];
+    this.selectedCredentialId = null;
+
+    try {
+      const resp = await this.api.getCredentialsForVectorStore(this.selectedProvider.provider_type);
+      if (resp.success) {
+        this.availableCredentials = resp.credentials || [];
+      }
+    } catch (e) {
+      console.error('Failed to load credentials', e);
+    } finally {
+      this.loadingCredentials = false;
+    }
+  }
+
+  onCredentialChange() {
+    // Can be used to update UI based on selected credential
   }
 
   initializeDefaults() {
@@ -679,6 +732,7 @@ export class VectorStoreCreateComponent implements OnInit {
 
   isStep2Valid(): boolean {
     if (!this.displayName?.trim()) return false;
+    if (!this.selectedCredentialId) return false;  // Require credential selection
     if (!this.providerSchema?.fields) return false;
 
     for (const field of this.providerSchema.fields) {
@@ -729,14 +783,20 @@ export class VectorStoreCreateComponent implements OnInit {
     return JSON.stringify(summary, null, 2);
   }
 
+  getSelectedCredentialName(): string {
+    const cred = this.availableCredentials.find(c => c.credential_id === this.selectedCredentialId);
+    return cred ? `${cred.credential_name} (${cred.auth_type})` : 'None selected';
+  }
+
   async createVectorStore() {
-    if (!this.selectedProvider) return;
+    if (!this.selectedProvider || !this.selectedCredentialId) return;
 
     this.creating = true;
     try {
       const result = await this.api.createVectorStoreWithoutEvent({
         display_name: this.displayName,
         provider_type: this.selectedProvider.provider_type,
+        credential_id: this.selectedCredentialId,
         config: this.configValues
       });
 

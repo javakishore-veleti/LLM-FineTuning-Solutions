@@ -14,6 +14,9 @@ class VectorStoreProviderType(str, Enum):
     AWS_NEPTUNE = "aws_neptune"
     AWS_DOCUMENTDB = "aws_documentdb"
 
+    # OpenAI
+    OPENAI = "openai"
+
     # MongoDB
     MONGODB_ATLAS = "mongodb_atlas"
 
@@ -94,6 +97,15 @@ PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "status": ProviderStatus.COMING_SOON,
         "description": "MongoDB-compatible document database with vector search",
         "icon": "aws"
+    },
+
+    # OpenAI - Available
+    VectorStoreProviderType.OPENAI: {
+        "name": "OpenAI Vector Stores",
+        "category": "Managed Cloud",
+        "status": ProviderStatus.AVAILABLE,
+        "description": "Managed vector storage for OpenAI Assistants API with automatic chunking and retrieval",
+        "icon": "openai"
     },
 
     # MongoDB - Available

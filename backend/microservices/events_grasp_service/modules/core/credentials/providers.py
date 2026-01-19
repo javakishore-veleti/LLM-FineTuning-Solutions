@@ -8,6 +8,7 @@ class CredentialProviderType(str, Enum):
     AWS = "aws"
     AZURE = "azure"
     GCP = "gcp"
+    OPENAI = "openai"
     NEO4J = "neo4j"
     ELASTICSEARCH = "elasticsearch"
     REDIS = "redis"
@@ -54,6 +55,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
             {"value": AWSAuthType.BASIC.value, "label": "Access Key & Secret", "description": "Use AWS Access Key ID and Secret Access Key"},
             {"value": AWSAuthType.IAM_ROLE.value, "label": "IAM Role", "description": "Assume an IAM Role (for EC2, Lambda, ECS)"},
             {"value": AWSAuthType.PROFILE.value, "label": "AWS Profile", "description": "Use named profile from ~/.aws/credentials (local dev)"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY env vars"},
         ]
     },
     CredentialProviderType.AZURE: {
@@ -65,6 +67,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
             {"value": AzureAuthType.SERVICE_PRINCIPAL.value, "label": "Service Principal", "description": "Client ID, Secret, and Tenant ID"},
             {"value": AzureAuthType.MANAGED_IDENTITY.value, "label": "Managed Identity", "description": "Azure Managed Identity (for Azure VMs, Functions)"},
             {"value": AzureAuthType.CONNECTION_STRING.value, "label": "Connection String", "description": "Service-specific connection string"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID env vars"},
         ]
     },
     CredentialProviderType.GCP: {
@@ -75,6 +78,17 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "auth_types": [
             {"value": GCPAuthType.SERVICE_ACCOUNT.value, "label": "Service Account Key", "description": "Upload service account JSON key file"},
             {"value": GCPAuthType.APPLICATION_DEFAULT.value, "label": "Application Default", "description": "Use Application Default Credentials (local dev)"},
+            {"value": "env_var", "label": "Environment Variable", "description": "Use GOOGLE_APPLICATION_CREDENTIALS env var"},
+        ]
+    },
+    CredentialProviderType.OPENAI: {
+        "name": "OpenAI",
+        "icon": "openai",
+        "status": ProviderStatus.AVAILABLE,
+        "description": "OpenAI API credentials for Vector Stores and Assistants",
+        "auth_types": [
+            {"value": "api_key", "label": "API Key", "description": "OpenAI API Key"},
+            {"value": "env_var", "label": "Environment Variable", "description": "Use environment variable for API key"},
         ]
     },
     CredentialProviderType.NEO4J: {
@@ -84,6 +98,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "description": "Neo4j database credentials for graph vector store",
         "auth_types": [
             {"value": "basic", "label": "Username & Password", "description": "Neo4j username and password authentication"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD env vars"},
         ]
     },
     CredentialProviderType.ELASTICSEARCH: {
@@ -94,6 +109,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "auth_types": [
             {"value": "basic", "label": "Username & Password", "description": "Basic authentication"},
             {"value": "api_key", "label": "API Key", "description": "Elasticsearch API Key"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use ELASTICSEARCH_URL, ELASTICSEARCH_API_KEY env vars"},
         ]
     },
     CredentialProviderType.REDIS: {
@@ -104,6 +120,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "auth_types": [
             {"value": "password", "label": "Password", "description": "Redis password authentication"},
             {"value": "acl", "label": "ACL User", "description": "Redis ACL username and password"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use REDIS_URL or REDIS_HOST, REDIS_PASSWORD env vars"},
         ]
     },
     CredentialProviderType.PGVECTOR: {
@@ -113,6 +130,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "description": "PostgreSQL database credentials for pgvector extension",
         "auth_types": [
             {"value": "basic", "label": "Username & Password", "description": "PostgreSQL username and password"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use DATABASE_URL or PG_HOST, PG_USER, PG_PASSWORD env vars"},
         ]
     },
     CredentialProviderType.MONGODB: {
@@ -123,6 +141,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "auth_types": [
             {"value": "connection_string", "label": "Connection String", "description": "MongoDB connection string with credentials"},
             {"value": "basic", "label": "Username & Password", "description": "MongoDB username and password"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use MONGODB_URI env var"},
         ]
     },
     CredentialProviderType.PINECONE: {
@@ -132,6 +151,7 @@ CREDENTIAL_PROVIDER_METADATA: Dict[str, Dict[str, Any]] = {
         "description": "Pinecone API credentials",
         "auth_types": [
             {"value": "api_key", "label": "API Key", "description": "Pinecone API Key"},
+            {"value": "env_var", "label": "Environment Variables", "description": "Use PINECONE_API_KEY, PINECONE_ENVIRONMENT env vars"},
         ]
     },
     CredentialProviderType.CUSTOM: {

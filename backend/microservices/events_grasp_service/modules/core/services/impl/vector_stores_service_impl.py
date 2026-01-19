@@ -209,11 +209,12 @@ class VectorStoresService(IVectorStoresService):
             with self.db.session_scope() as session:
                 query = text("""
                     INSERT INTO event_vector_stores 
-                    (event_id, vector_store_provider, vector_store_db_name, vector_store_db_link, vector_config_json, status)
-                    VALUES (:event_id, :provider, :db_name, :db_link, :config, 'pending')
+                    (event_id, credential_id, vector_store_provider, vector_store_db_name, vector_store_db_link, vector_config_json, status)
+                    VALUES (:event_id, :credential_id, :provider, :db_name, :db_link, :config, 'pending')
                 """)
                 session.execute(query, {
                     "event_id": data.get("event_id"),
+                    "credential_id": data.get("credential_id"),
                     "provider": data.get("vector_store_provider"),
                     "db_name": data.get("vector_store_db_name"),
                     "db_link": data.get("vector_store_db_link"),

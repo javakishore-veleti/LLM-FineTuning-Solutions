@@ -461,34 +461,350 @@ def get_pinecone_api_key_schema() -> Dict[str, Any]:
     }
 
 
+def get_openai_api_key_schema() -> Dict[str, Any]:
+    """OpenAI API Key authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "api_key",
+                "label": "OpenAI API Key",
+                "type": "password",
+                "required": True,
+                "placeholder": "sk-...",
+                "description": "Your OpenAI API Key (starts with sk-)"
+            },
+            {
+                "name": "organization_id",
+                "label": "Organization ID",
+                "type": "text",
+                "required": False,
+                "placeholder": "org-...",
+                "description": "OpenAI Organization ID (optional)"
+            }
+        ]
+    }
+
+
+def get_openai_env_var_schema() -> Dict[str, Any]:
+    """OpenAI environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "api_key_env_var",
+                "label": "API Key Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "OPENAI_API_KEY",
+                "description": "Name of the environment variable containing OpenAI API key"
+            },
+            {
+                "name": "org_id_env_var",
+                "label": "Organization ID Environment Variable",
+                "type": "text",
+                "required": False,
+                "placeholder": "OPENAI_ORG_ID",
+                "description": "Name of the environment variable for Organization ID (optional)"
+            }
+        ]
+    }
+
+
+def get_aws_env_var_schema() -> Dict[str, Any]:
+    """AWS environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "access_key_env_var",
+                "label": "Access Key ID Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "AWS_ACCESS_KEY_ID",
+                "description": "Name of the environment variable containing AWS Access Key ID"
+            },
+            {
+                "name": "secret_key_env_var",
+                "label": "Secret Access Key Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "AWS_SECRET_ACCESS_KEY",
+                "description": "Name of the environment variable containing AWS Secret Access Key"
+            },
+            {
+                "name": "region_env_var",
+                "label": "Region Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "AWS_REGION",
+                "description": "Name of the environment variable for AWS region (optional)"
+            }
+        ]
+    }
+
+
+def get_azure_env_var_schema() -> Dict[str, Any]:
+    """Azure environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "client_id_env_var",
+                "label": "Client ID Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "AZURE_CLIENT_ID",
+                "description": "Name of the environment variable containing Azure Client ID"
+            },
+            {
+                "name": "client_secret_env_var",
+                "label": "Client Secret Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "AZURE_CLIENT_SECRET",
+                "description": "Name of the environment variable containing Azure Client Secret"
+            },
+            {
+                "name": "tenant_id_env_var",
+                "label": "Tenant ID Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "AZURE_TENANT_ID",
+                "description": "Name of the environment variable containing Azure Tenant ID"
+            }
+        ]
+    }
+
+
+def get_gcp_env_var_schema() -> Dict[str, Any]:
+    """GCP environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "credentials_env_var",
+                "label": "Credentials File Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "GOOGLE_APPLICATION_CREDENTIALS",
+                "description": "Name of the environment variable pointing to service account JSON file"
+            },
+            {
+                "name": "project_id_env_var",
+                "label": "Project ID Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "GCP_PROJECT_ID",
+                "description": "Name of the environment variable for GCP project ID (optional)"
+            }
+        ]
+    }
+
+
+def get_neo4j_env_var_schema() -> Dict[str, Any]:
+    """Neo4j environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "uri_env_var",
+                "label": "URI Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "NEO4J_URI",
+                "description": "Name of the environment variable containing Neo4j URI"
+            },
+            {
+                "name": "username_env_var",
+                "label": "Username Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "NEO4J_USERNAME",
+                "description": "Name of the environment variable containing Neo4j username"
+            },
+            {
+                "name": "password_env_var",
+                "label": "Password Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "NEO4J_PASSWORD",
+                "description": "Name of the environment variable containing Neo4j password"
+            }
+        ]
+    }
+
+
+def get_elasticsearch_env_var_schema() -> Dict[str, Any]:
+    """Elasticsearch environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "url_env_var",
+                "label": "URL Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "ELASTICSEARCH_URL",
+                "description": "Name of the environment variable containing Elasticsearch URL"
+            },
+            {
+                "name": "api_key_env_var",
+                "label": "API Key Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "ELASTICSEARCH_API_KEY",
+                "description": "Name of the environment variable for API key (if using API key auth)"
+            }
+        ]
+    }
+
+
+def get_redis_env_var_schema() -> Dict[str, Any]:
+    """Redis environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "url_env_var",
+                "label": "URL Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "REDIS_URL",
+                "description": "Name of the environment variable containing Redis URL (full connection string)"
+            },
+            {
+                "name": "host_env_var",
+                "label": "Host Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "REDIS_HOST",
+                "description": "Name of the environment variable for Redis host (if not using URL)"
+            },
+            {
+                "name": "password_env_var",
+                "label": "Password Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "REDIS_PASSWORD",
+                "description": "Name of the environment variable for Redis password"
+            }
+        ]
+    }
+
+
+def get_pgvector_env_var_schema() -> Dict[str, Any]:
+    """PostgreSQL environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "database_url_env_var",
+                "label": "Database URL Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "DATABASE_URL",
+                "description": "Name of the environment variable containing full database URL"
+            },
+            {
+                "name": "host_env_var",
+                "label": "Host Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "PG_HOST",
+                "description": "Name of the environment variable for PostgreSQL host"
+            },
+            {
+                "name": "user_env_var",
+                "label": "User Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "PG_USER",
+                "description": "Name of the environment variable for PostgreSQL user"
+            },
+            {
+                "name": "password_env_var",
+                "label": "Password Environment Variable",
+                "type": "text",
+                "required": False,
+                "default": "PG_PASSWORD",
+                "description": "Name of the environment variable for PostgreSQL password"
+            }
+        ]
+    }
+
+
+def get_mongodb_env_var_schema() -> Dict[str, Any]:
+    """MongoDB environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "uri_env_var",
+                "label": "URI Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "MONGODB_URI",
+                "description": "Name of the environment variable containing MongoDB connection URI"
+            }
+        ]
+    }
+
+
+def get_pinecone_env_var_schema() -> Dict[str, Any]:
+    """Pinecone environment variable authentication schema."""
+    return {
+        "fields": [
+            {
+                "name": "api_key_env_var",
+                "label": "API Key Environment Variable",
+                "type": "text",
+                "required": True,
+                "default": "PINECONE_API_KEY",
+                "description": "Name of the environment variable containing Pinecone API key"
+            },
+            {
+                "name": "environment_env_var",
+                "label": "Environment Variable for Pinecone Environment",
+                "type": "text",
+                "required": False,
+                "default": "PINECONE_ENVIRONMENT",
+                "description": "Name of the environment variable for Pinecone environment"
+            }
+        ]
+    }
+
+
 # Schema mapping
 CREDENTIAL_SCHEMAS: Dict[str, Dict[str, Any]] = {
     # AWS
     "aws:basic": get_aws_basic_schema(),
     "aws:iam_role": get_aws_iam_role_schema(),
     "aws:profile": get_aws_profile_schema(),
+    "aws:env_var": get_aws_env_var_schema(),
     # Azure
     "azure:service_principal": get_azure_service_principal_schema(),
     "azure:managed_identity": {"fields": []},  # No config needed
     "azure:connection_string": get_azure_connection_string_schema(),
+    "azure:env_var": get_azure_env_var_schema(),
     # GCP
     "gcp:service_account": get_gcp_service_account_schema(),
     "gcp:application_default": {"fields": []},  # No config needed
+    "gcp:env_var": get_gcp_env_var_schema(),
+    # OpenAI
+    "openai:api_key": get_openai_api_key_schema(),
+    "openai:env_var": get_openai_env_var_schema(),
     # Neo4j
     "neo4j:basic": get_neo4j_basic_schema(),
+    "neo4j:env_var": get_neo4j_env_var_schema(),
     # Elasticsearch
     "elasticsearch:basic": get_elasticsearch_basic_schema(),
     "elasticsearch:api_key": get_elasticsearch_api_key_schema(),
+    "elasticsearch:env_var": get_elasticsearch_env_var_schema(),
     # Redis
     "redis:password": get_redis_password_schema(),
     "redis:acl": get_redis_password_schema(),  # Same schema, different usage
+    "redis:env_var": get_redis_env_var_schema(),
     # pgvector
     "pgvector:basic": get_pgvector_basic_schema(),
+    "pgvector:env_var": get_pgvector_env_var_schema(),
     # MongoDB
     "mongodb:connection_string": get_mongodb_connection_string_schema(),
     "mongodb:basic": get_mongodb_basic_schema(),
+    "mongodb:env_var": get_mongodb_env_var_schema(),
     # Pinecone
     "pinecone:api_key": get_pinecone_api_key_schema(),
+    "pinecone:env_var": get_pinecone_env_var_schema(),
 }
 
 

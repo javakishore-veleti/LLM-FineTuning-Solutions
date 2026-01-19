@@ -376,6 +376,7 @@ export interface ProviderConfigPayload {
 export interface VectorStoreCreateWithoutEventPayload {
   display_name: string;
   provider_type: string;
+  credential_id: number;
   config: { [key: string]: any };
 }
 

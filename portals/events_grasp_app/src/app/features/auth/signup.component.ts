@@ -226,24 +226,24 @@ import { ToastService } from '../../core/toast.service';
 <!-- Hero Section -->
       <div class="hero-section">
         <h1>Turn event content into <span class="highlight">intelligent conversations</span> 🧠</h1>
-        <p>Paste any event link — we scrape, index, and let you chat with the content using AI. Your knowledge base, your vector DB, your LLM.</p>
+        <p>Paste any event link - we scrape, index, and let you chat with the event content. Your knowledge base. Your vector DB. Your LLM.</p>
 
         <ul class="feature-list">
           <li>
             <span class="feature-icon">🔗</span>
-            <span><strong>Smart Scraping</strong> — Drop a link, we extract everything</span>
+            <span><strong>Smart Scraping</strong> - Drop a link, we extract everything</span>
           </li>
           <li>
             <span class="feature-icon">🗄️</span>
-            <span><strong>Vector Indexing</strong> — Connect your Pinecone, Weaviate, or more</span>
+            <span><strong>Vector Indexing</strong> - Connect your Vector Stores (AWS, Azure, Google Cloud,  Neo4j, Elastic Search, Pinecone,  or more)</span>
           </li>
           <li>
             <span class="feature-icon">💬</span>
-            <span><strong>AI Conversations</strong> — Chat with your content using any LLM</span>
+            <span><strong>AI Conversations</strong> - Chat with your content using any LLM</span>
           </li>
           <li>
             <span class="feature-icon">🔐</span>
-            <span><strong>Your Credentials</strong> — Bring your own API keys, fully secure</span>
+            <span><strong>Your Credentials</strong> - Bring your own API keys, fully secure</span>
           </li>
         </ul>
       </div>

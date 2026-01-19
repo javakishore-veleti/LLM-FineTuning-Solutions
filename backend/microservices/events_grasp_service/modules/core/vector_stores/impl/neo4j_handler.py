@@ -13,17 +13,11 @@ class Neo4jConfigHandler(BaseVectorStoreConfigHandler):
 
     def validate_config(self, config: Dict[str, Any]) -> tuple[bool, Optional[str]]:
         """Validate Neo4j configuration."""
-        required_fields = ['uri', 'username', 'password']
+        required_fields = ['index_name']
 
         for field in required_fields:
             if not config.get(field):
                 return False, f"Missing required field: {field}"
-
-        # Validate URI format
-        uri = config.get('uri', '')
-        valid_schemes = ['bolt://', 'bolt+s://', 'neo4j://', 'neo4j+s://']
-        if not any(uri.startswith(scheme) for scheme in valid_schemes):
-            return False, "URI must start with bolt://, bolt+s://, neo4j://, or neo4j+s://"
 
         # Validate dimension if provided
         dimension = config.get('dimension')
@@ -36,29 +30,6 @@ class Neo4jConfigHandler(BaseVectorStoreConfigHandler):
         """Get Neo4j configuration schema."""
         return {
             "fields": [
-                {
-                    "name": "uri",
-                    "label": "Connection URI",
-                    "type": "text",
-                    "required": True,
-                    "placeholder": "neo4j+s://xxxxx.databases.neo4j.io",
-                    "description": "Neo4j connection URI (Aura or self-hosted)"
-                },
-                {
-                    "name": "username",
-                    "label": "Username",
-                    "type": "text",
-                    "required": True,
-                    "default": "neo4j",
-                    "description": "Database username"
-                },
-                {
-                    "name": "password",
-                    "label": "Password",
-                    "type": "password",
-                    "required": True,
-                    "description": "Database password"
-                },
                 {
                     "name": "database",
                     "label": "Database Name",

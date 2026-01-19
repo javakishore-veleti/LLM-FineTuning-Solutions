@@ -88,34 +88,6 @@ class AWSOpenSearchConfigHandler(BaseVectorStoreConfigHandler):
                     "description": "Dimension of the embedding vectors (e.g., 1536 for OpenAI ada-002)"
                 },
                 {
-                    "name": "auth_type",
-                    "label": "Authentication Type",
-                    "type": "select",
-                    "required": True,
-                    "options": [
-                        {"value": "iam", "label": "IAM Role"},
-                        {"value": "basic", "label": "Basic Auth"},
-                    ],
-                    "default": "iam",
-                    "description": "Authentication method for OpenSearch"
-                },
-                {
-                    "name": "access_key_id",
-                    "label": "AWS Access Key ID",
-                    "type": "password",
-                    "required": False,
-                    "description": "AWS Access Key (leave empty to use IAM role)",
-                    "showIf": {"auth_type": "basic"}
-                },
-                {
-                    "name": "secret_access_key",
-                    "label": "AWS Secret Access Key",
-                    "type": "password",
-                    "required": False,
-                    "description": "AWS Secret Key (leave empty to use IAM role)",
-                    "showIf": {"auth_type": "basic"}
-                },
-                {
                     "name": "similarity_metric",
                     "label": "Similarity Metric",
                     "type": "select",
@@ -146,7 +118,7 @@ class AWSAuroraPgVectorConfigHandler(BaseVectorStoreConfigHandler):
 
     def validate_config(self, config: Dict[str, Any]) -> tuple[bool, Optional[str]]:
         """Validate Aurora PostgreSQL configuration."""
-        required_fields = ['host', 'port', 'database', 'username']
+        required_fields = ['host', 'port', 'database']
 
         for field in required_fields:
             if not config.get(field):
@@ -186,20 +158,6 @@ class AWSAuroraPgVectorConfigHandler(BaseVectorStoreConfigHandler):
                     "required": True,
                     "placeholder": "vectordb",
                     "description": "Name of the database"
-                },
-                {
-                    "name": "username",
-                    "label": "Username",
-                    "type": "text",
-                    "required": True,
-                    "description": "Database username"
-                },
-                {
-                    "name": "password",
-                    "label": "Password",
-                    "type": "password",
-                    "required": True,
-                    "description": "Database password"
                 },
                 {
                     "name": "table_name",

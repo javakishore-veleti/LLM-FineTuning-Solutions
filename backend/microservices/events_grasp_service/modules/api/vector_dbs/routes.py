@@ -329,6 +329,7 @@ class StandaloneVectorStoreRequest(BaseModel):
     """Request model for creating a standalone vector store (no event association)."""
     display_name: str
     provider_type: str
+    credential_id: int
     config: Dict[str, Any]
 
 
@@ -369,6 +370,7 @@ def create_standalone_vector_store(request: StandaloneVectorStoreRequest):
 
     store_data = {
         "event_id": None,  # No event association
+        "credential_id": request.credential_id,
         "vector_store_provider": request.provider_type,
         "vector_store_db_name": request.display_name,
         "vector_config_json": result.get("config_json")

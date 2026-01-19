@@ -289,6 +289,7 @@ class CredentialsService:
             "redis": ["redis", "aws"],
             "pgvector": ["pgvector"],
             "pinecone": ["pinecone"],
+            "openai": ["openai"],
         }
 
         compatible_providers = provider_mapping.get(provider_type, [provider_type])

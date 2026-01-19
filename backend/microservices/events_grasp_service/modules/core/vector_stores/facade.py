@@ -12,6 +12,7 @@ from .providers import (
 from .impl.aws_handlers import AWSOpenSearchConfigHandler, AWSAuroraPgVectorConfigHandler
 from .impl.mongodb_handler import MongoDBAtlasConfigHandler
 from .impl.neo4j_handler import Neo4jConfigHandler
+from .impl.openai_handler import OpenAIVectorStoresConfigHandler
 from .impl.coming_soon_handler import ComingSoonConfigHandler
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class VectorStoreConfigFacade:
         VectorStoreProviderType.AWS_AURORA_PGVECTOR.value: AWSAuroraPgVectorConfigHandler,
         VectorStoreProviderType.MONGODB_ATLAS.value: MongoDBAtlasConfigHandler,
         VectorStoreProviderType.NEO4J.value: Neo4jConfigHandler,
+        VectorStoreProviderType.OPENAI.value: OpenAIVectorStoresConfigHandler,
     }
 
     _handler_instances: Dict[str, IVectorStoreConfigHandler] = {}

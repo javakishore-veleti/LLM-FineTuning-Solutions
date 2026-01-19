@@ -205,8 +205,8 @@ import { ToastService } from '../../core/toast.service';
     <div class="login-wrapper">
 <!-- Hero Section -->
       <div class="hero-section">
-        <h1>Your AI-powered <span class="highlight">knowledge base</span> awaits 🧠</h1>
-        <p>Sign in to continue scraping event content, indexing to your vector databases, and having intelligent conversations with your data.</p>
+        <h1>Your events <span class="highlight">knowledge base</span> 🧠 ready to explore - powered by AI and LLMs</h1>
+        <p>Sign in to continue crawling event content, indexing to your vector databases, and having intelligent conversations with your data.</p>
 
         <div class="stats-row">
           <div class="stat-item">

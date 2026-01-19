@@ -13,16 +13,11 @@ class MongoDBAtlasConfigHandler(BaseVectorStoreConfigHandler):
 
     def validate_config(self, config: Dict[str, Any]) -> tuple[bool, Optional[str]]:
         """Validate MongoDB Atlas configuration."""
-        required_fields = ['connection_string', 'database_name', 'collection_name', 'index_name']
+        required_fields = ['database_name', 'collection_name', 'index_name']
 
         for field in required_fields:
             if not config.get(field):
                 return False, f"Missing required field: {field}"
-
-        # Validate connection string format
-        conn_string = config.get('connection_string', '')
-        if not conn_string.startswith('mongodb+srv://') and not conn_string.startswith('mongodb://'):
-            return False, "Connection string must start with mongodb:// or mongodb+srv://"
 
         # Validate dimension if provided
         dimension = config.get('dimension')
@@ -35,14 +30,6 @@ class MongoDBAtlasConfigHandler(BaseVectorStoreConfigHandler):
         """Get MongoDB Atlas configuration schema."""
         return {
             "fields": [
-                {
-                    "name": "connection_string",
-                    "label": "Connection String",
-                    "type": "password",
-                    "required": True,
-                    "placeholder": "mongodb+srv://username:password@cluster.xxxxx.mongodb.net/",
-                    "description": "MongoDB Atlas connection string (includes credentials)"
-                },
                 {
                     "name": "database_name",
                     "label": "Database Name",
